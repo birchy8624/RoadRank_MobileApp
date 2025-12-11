@@ -1,21 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, useJsApiLoader, Polyline, InfoWindow } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Polyline, Popup, useMapEvents } from 'react-leaflet';
 import axios from 'axios';
 import RatingModal from './RatingModal';
+import 'leaflet/dist/leaflet.css';
 import './Map.css';
 
-const center = {
-  lat: 54.0,
-  lng: -2.0,
-};
+const center = [54.0, -2.0]; // [lat, lng] for Leaflet
 
-function Map() {
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries: ['drawing'],
+function DrawingLayer({ drawing, onDraw }) {
+  const [currentPath, setCurrentPath] = useState([]);
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  useMapEvents({
+    mousedown: (e) => {
+      if (drawing) {
+        setIsDrawing(true);
+        const newPoint = [e.latlng.lat, e.latlng.lng];
+        setCurrentPath([newPoint]);
+      }
+    },
+    mousemove: (e) => {
+      if (drawing && isDrawing) {
+        const newPoint = [e.latlng.lat, e.latlng.lng];
+        setCurrentPath((prev) => [...prev, newPoint]);
+      }
+    },
+    mouseup: () => {
+      if (drawing && isDrawing) {
+        setIsDrawing(false);
+        onDraw(currentPath);
+        setCurrentPath([]);
+      }
+    },
   });
 
+  return currentPath.length > 0 ? (
+    <Polyline
+      positions={currentPath}
+      pathOptions={{
+        color: '#0000FF',
+        opacity: 0.8,
+        weight: 5,
+      }}
+    />
+  ) : null;
+}
+
+function Map() {
   const [roads, setRoads] = useState([]);
   const [drawing, setDrawing] = useState(false);
   const [drawnPath, setDrawnPath] = useState([]);
@@ -23,27 +54,28 @@ function Map() {
   const [selectedRoad, setSelectedRoad] = useState(null);
 
   useEffect(() => {
-    async function fetchRoads() {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/roads`);
-        setRoads(response.data);
-      } catch (error) {
-        console.error('Error fetching roads:', error);
-      }
-    }
-    if (isLoaded) {
-      fetchRoads();
-    }
-  }, [isLoaded]);
+    fetchRoads();
+  }, []);
 
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
+  const fetchRoads = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/roads`);
+      setRoads(response.data);
+    } catch (error) {
+      console.error('Error fetching roads:', error);
+    }
+  };
 
   const getRoadColor = (rating) => {
     if (rating >= 4) return '#00FF00'; // Green
     if (rating >= 2.5) return '#FFFF00'; // Yellow
     return '#FF0000'; // Red
+  };
+
+  const handleDrawComplete = (path) => {
+    if (path.length > 1) {
+      setDrawnPath(path);
+    }
   };
 
   const handleSaveRoute = () => {
@@ -59,7 +91,7 @@ function Map() {
   const handleSubmitRating = async (ratings) => {
     try {
       const newRoad = {
-        path: drawnPath,
+        path: drawnPath.map(([lat, lng]) => ({ lat, lng })),
         ...ratings,
       };
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/roads`, newRoad);
@@ -86,90 +118,67 @@ function Map() {
           </button>
         )}
       </div>
-      <GoogleMap
-        mapContainerClassName="map-container"
+      <MapContainer
         center={center}
         zoom={6}
-        options={{
-          disableDefaultUI: true,
-          draggableCursor: drawing ? 'crosshair' : 'grab',
-        }}
-        onMouseDown={(e) => {
-          if (drawing) {
-            setDrawnPath([{ lat: e.latLng.lat(), lng: e.latLng.lng() }]);
-          }
-        }}
-        onMouseMove={(e) => {
-          if (drawing && drawnPath.length > 0) {
-            setDrawnPath([...drawnPath, { lat: e.latLng.lat(), lng: e.latLng.lng() }]);
-          }
-        }}
-        onMouseUp={async () => {
-          if (drawing && drawnPath.length > 1) {
-            const pathString = drawnPath.map((p) => `${p.lat},${p.lng}`).join('|');
-            const response = await axios.get(
-              `https://roads.googleapis.com/v1/snapToRoads?path=${pathString}&interpolate=true&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
-            );
-            const snappedPoints = response.data.snappedPoints.map((p) => ({
-              lat: p.location.latitude,
-              lng: p.location.longitude,
-            }));
-            setDrawnPath(snappedPoints);
-          }
-        }}
+        className="map-container"
+        style={{ cursor: drawing ? 'crosshair' : 'grab' }}
       >
-        {roads.map((road) => (
-          <Polyline
-            key={road.id}
-            path={JSON.parse(road.path)}
-            options={{
-              strokeColor: getRoadColor(road.fun_factor),
-              strokeOpacity: 0.8,
-              strokeWeight: 5,
-            }}
-            onClick={() => setSelectedRoad(road)}
-          />
-        ))}
-        {selectedRoad && (() => {
-          const path = JSON.parse(selectedRoad.path);
-          const middleIndex = Math.floor(path.length / 2);
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <DrawingLayer drawing={drawing} onDraw={handleDrawComplete} />
+
+        {roads.map((road) => {
+          const path = JSON.parse(road.path);
+          const positions = path.map((p) => [p.lat, p.lng]);
+          const middleIndex = Math.floor(positions.length / 2);
+
           return (
-            <InfoWindow
-              position={path[middleIndex]}
-              onCloseClick={() => setSelectedRoad(null)}
+            <Polyline
+              key={road.id}
+              positions={positions}
+              pathOptions={{
+                color: getRoadColor(road.fun_factor),
+                opacity: 0.8,
+                weight: 5,
+              }}
+              eventHandlers={{
+                click: () => setSelectedRoad({ ...road, middlePosition: positions[middleIndex] }),
+              }}
             >
-              <div>
-                <h3>Road Details</h3>
-                <p>Twistiness: {selectedRoad.twistiness}</p>
-                <p>Surface Condition: {selectedRoad.surface_condition}</p>
-                <p>Fun Factor: {selectedRoad.fun_factor}</p>
-                <p>Scenery: {selectedRoad.scenery}</p>
-                <p>Visibility: {selectedRoad.visibility}</p>
-              </div>
-            </InfoWindow>
+              {selectedRoad && selectedRoad.id === road.id && (
+                <Popup
+                  position={selectedRoad.middlePosition}
+                  onClose={() => setSelectedRoad(null)}
+                >
+                  <div>
+                    <h3>Road Details</h3>
+                    <p>Twistiness: {selectedRoad.twistiness}</p>
+                    <p>Surface Condition: {selectedRoad.surface_condition}</p>
+                    <p>Fun Factor: {selectedRoad.fun_factor}</p>
+                    <p>Scenery: {selectedRoad.scenery}</p>
+                    <p>Visibility: {selectedRoad.visibility}</p>
+                  </div>
+                </Popup>
+              )}
+            </Polyline>
           );
-        })()}
-            <div>
-              <h3>Road Details</h3>
-              <p>Twistiness: {selectedRoad.twistiness}</p>
-              <p>Surface Condition: {selectedRoad.surface_condition}</p>
-              <p>Fun Factor: {selectedRoad.fun_factor}</p>
-              <p>Scenery: {selectedRoad.scenery}</p>
-              <p>Visibility: {selectedRoad.visibility}</p>
-            </div>
-          </InfoWindow>
-        )}
+        })}
+
         {drawnPath.length > 0 && (
           <Polyline
-            path={drawnPath}
-            options={{
-              strokeColor: '#0000FF',
-              strokeOpacity: 0.8,
-              strokeWeight: 5,
+            positions={drawnPath}
+            pathOptions={{
+              color: '#0000FF',
+              opacity: 0.8,
+              weight: 5,
             }}
           />
         )}
-      </GoogleMap>
+      </MapContainer>
     </>
   );
 }
