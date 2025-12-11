@@ -60,9 +60,10 @@ function Map() {
   const fetchRoads = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/roads`);
-      setRoads(response.data);
+      setRoads(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching roads:', error);
+      setRoads([]);
     }
   };
 
@@ -113,7 +114,7 @@ function Map() {
           </button>
         )}
         {drawing && drawnPath.length > 0 && (
-          <button onClick={handleSaveRoute} className="control-button">
+          <button onClick={handleSaveRoute} className="control-button save">
             Save Route
           </button>
         )}
@@ -132,40 +133,47 @@ function Map() {
         <DrawingLayer drawing={drawing} onDraw={handleDrawComplete} />
 
         {roads.map((road) => {
-          const path = JSON.parse(road.path);
-          const positions = path.map((p) => [p.lat, p.lng]);
-          const middleIndex = Math.floor(positions.length / 2);
+          try {
+            const path = typeof road.path === 'string' ? JSON.parse(road.path) : road.path;
+            if (!Array.isArray(path)) return null;
 
-          return (
-            <Polyline
-              key={road.id}
-              positions={positions}
-              pathOptions={{
-                color: getRoadColor(road.fun_factor),
-                opacity: 0.8,
-                weight: 5,
-              }}
-              eventHandlers={{
-                click: () => setSelectedRoad({ ...road, middlePosition: positions[middleIndex] }),
-              }}
-            >
-              {selectedRoad && selectedRoad.id === road.id && (
-                <Popup
-                  position={selectedRoad.middlePosition}
-                  onClose={() => setSelectedRoad(null)}
-                >
-                  <div>
-                    <h3>Road Details</h3>
-                    <p>Twistiness: {selectedRoad.twistiness}</p>
-                    <p>Surface Condition: {selectedRoad.surface_condition}</p>
-                    <p>Fun Factor: {selectedRoad.fun_factor}</p>
-                    <p>Scenery: {selectedRoad.scenery}</p>
-                    <p>Visibility: {selectedRoad.visibility}</p>
-                  </div>
-                </Popup>
-              )}
-            </Polyline>
-          );
+            const positions = path.map((p) => [p.lat, p.lng]);
+            const middleIndex = Math.floor(positions.length / 2);
+
+            return (
+              <Polyline
+                key={road.id}
+                positions={positions}
+                pathOptions={{
+                  color: getRoadColor(road.fun_factor),
+                  opacity: 0.8,
+                  weight: 5,
+                }}
+                eventHandlers={{
+                  click: () => setSelectedRoad({ ...road, middlePosition: positions[middleIndex] }),
+                }}
+              >
+                {selectedRoad && selectedRoad.id === road.id && (
+                  <Popup
+                    position={selectedRoad.middlePosition}
+                    onClose={() => setSelectedRoad(null)}
+                  >
+                    <div>
+                      <h3>Road Details</h3>
+                      <p>Twistiness: {selectedRoad.twistiness}</p>
+                      <p>Surface Condition: {selectedRoad.surface_condition}</p>
+                      <p>Fun Factor: {selectedRoad.fun_factor}</p>
+                      <p>Scenery: {selectedRoad.scenery}</p>
+                      <p>Visibility: {selectedRoad.visibility}</p>
+                    </div>
+                  </Popup>
+                )}
+              </Polyline>
+            );
+          } catch (err) {
+            console.error('Error rendering road:', road, err);
+            return null;
+          }
         })}
 
         {drawnPath.length > 0 && (
