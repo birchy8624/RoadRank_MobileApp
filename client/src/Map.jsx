@@ -463,7 +463,7 @@ function Map() {
         ref={mapRef}
         center={center}
         zoom={6}
-        className="map-container"
+        className={`map-container ${drawing ? 'drawing' : ''}`}
         zoomControl={false}
         style={{ cursor: drawing ? 'crosshair' : 'grab' }}
       >

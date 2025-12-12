@@ -8,6 +8,12 @@
   box-shadow: 0 25px 45px -20px rgba(0, 0, 0, 0.35);
 }
 
+.map-container.drawing,
+.map-container.drawing .leaflet-pane,
+.map-container.drawing .leaflet-pane * {
+  cursor: crosshair !important;
+}
+
 .map-container .leaflet-pane .leaflet-tile {
   filter: grayscale(1) sepia(0.20) hue-rotate(110deg) saturate(1) brightness(0.95);
   transition: filter 0.3s ease;
