@@ -4,6 +4,7 @@ import axios from 'axios';
 import RatingModal from './RatingModal';
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
+import logo from './assets/roadrank-logo.svg';
 
 const center = [54.0, -2.0]; // [lat, lng] for Leaflet
 
@@ -201,8 +202,8 @@ function DrawingLayer({ drawing, onDraw }) {
     },
     mouseup: () => {
       if (drawing && isDrawing) {
-        setIsDrawing(false);
         onDraw(currentPath);
+        setIsDrawing(false);
         setCurrentPath([]);
       }
     },
@@ -211,38 +212,27 @@ function DrawingLayer({ drawing, onDraw }) {
   return currentPath.length > 0 ? (
     <Polyline
       positions={currentPath}
-      pathOptions={{
-        color: '#0ea5e9',
-        opacity: 0.8,
-        weight: 5,
-      }}
+      pathOptions={{ color: '#3b82f6', weight: 5, opacity: 0.8 }}
     />
   ) : null;
 }
 
-// Search component
+// Search box component with Nominatim API
 function SearchBox({ onLocationFound }) {
   const [query, setQuery] = useState('');
-  const [searching, setSearching] = useState(false);
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [searching, setSearching] = useState(false);
 
-  const handleSearch = async (searchQuery) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
+  const handleSearch = async (value) => {
     setSearching(true);
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`
-      );
-      const data = await response.json();
-      setResults(data);
-      setShowResults(true);
+      const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        params: { q: value, format: 'json', addressdetails: 1, limit: 5 },
+      });
+      setResults(response.data);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('Error searching locations:', error);
     } finally {
       setSearching(false);
     }
@@ -387,26 +377,35 @@ function Map() {
     <>
       {showRatingModal && <RatingModal onSubmit={handleSubmitRating} onCancel={handleCancelRating} />}
 
-      <SearchBox onLocationFound={handleLocationFound} />
+      <div className="map-topbar">
+        <div className="brand-chip">
+          <img src={logo} alt="RoadRank" />
+          <span>RoadRank</span>
+        </div>
 
-      <div className="controls-container">
-        {!drawing && (
-          <button onClick={() => setDrawing(true)} className="control-button">
-            ✏️ Draw Route
-          </button>
-        )}
-        {drawing && (
-          <>
-            {drawnPath.length > 0 && (
-              <button onClick={handleSaveRoute} className="control-button save">
-                ✓ Save Route
-              </button>
-            )}
-            <button onClick={() => { setDrawing(false); setDrawnPath([]); }} className="control-button cancel">
-              ✕ Cancel
+        <div className="topbar-search">
+          <SearchBox onLocationFound={handleLocationFound} />
+        </div>
+
+        <div className="topbar-actions">
+          {!drawing && (
+            <button onClick={() => setDrawing(true)}>
+              ✏️ Draw
             </button>
-          </>
-        )}
+          )}
+          {drawing && (
+            <>
+              {drawnPath.length > 0 && (
+                <button className="secondary" onClick={handleSaveRoute}>
+                  ✓ Save
+                </button>
+              )}
+              <button className="destructive" onClick={() => { setDrawing(false); setDrawnPath([]); }}>
+                ✕ Cancel
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <MapContainer
