@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { MapContainer, TileLayer, Polyline, Popup, useMapEvents, useMap, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Popup, Tooltip, useMapEvents, useMap, ZoomControl } from 'react-leaflet';
 import axios from 'axios';
 import RatingModal from './RatingModal';
 import 'leaflet/dist/leaflet.css';
@@ -450,6 +450,7 @@ function Map() {
             if (!Array.isArray(path)) return null;
 
             const positions = path.map((p) => [p.lat, p.lng]);
+            const roadName = road.name || 'Unnamed road';
 
             return (
               <Polyline
@@ -464,6 +465,9 @@ function Map() {
                   click: () => handleRoadSelect({ ...road, path }, positions),
                 }}
               >
+                <Tooltip className="road-tooltip" sticky>
+                  {roadName}
+                </Tooltip>
                 {selectedRoad && selectedRoad.id === road.id && (
                   <Popup
                     position={selectedRoad.middlePosition}
