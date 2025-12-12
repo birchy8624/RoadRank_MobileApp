@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Polyline, Popup, useMapEvents, useMap, ZoomControl } from 'react-leaflet';
+import L from 'leaflet';
 import axios from 'axios';
 import RatingModal from './RatingModal';
 import 'leaflet/dist/leaflet.css';
@@ -37,6 +38,18 @@ function MapController({ drawing }) {
 function DrawingLayer({ drawing, onDraw }) {
   const [currentPath, setCurrentPath] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const map = useMap();
+  const isDrawingRef = useRef(false);
+  const currentPathRef = useRef([]);
+
+  // Keep refs in sync with state for use in event handlers
+  useEffect(() => {
+    isDrawingRef.current = isDrawing;
+  }, [isDrawing]);
+
+  useEffect(() => {
+    currentPathRef.current = currentPath;
+  }, [currentPath]);
 
   const startDrawing = (latlng) => {
     const newPoint = [latlng.lat, latlng.lng];
@@ -50,13 +63,60 @@ function DrawingLayer({ drawing, onDraw }) {
   };
 
   const endDrawing = () => {
-    if (drawing && isDrawing) {
-      onDraw(currentPath);
+    if (drawing && isDrawingRef.current && currentPathRef.current.length > 0) {
+      onDraw(currentPathRef.current);
       setIsDrawing(false);
       setCurrentPath([]);
     }
   };
 
+  // Use native DOM touch events for reliable mobile drawing
+  useEffect(() => {
+    if (!drawing) return;
+
+    const container = map.getContainer();
+
+    const getTouchLatLng = (touch) => {
+      const rect = container.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      const point = L.point(x, y);
+      return map.containerPointToLatLng(point);
+    };
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        const latlng = getTouchLatLng(e.touches[0]);
+        startDrawing(latlng);
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (isDrawingRef.current && e.touches.length === 1) {
+        e.preventDefault();
+        const latlng = getTouchLatLng(e.touches[0]);
+        continueDrawing(latlng);
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      e.preventDefault();
+      endDrawing();
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [drawing, map]);
+
+  // Mouse events for desktop
   useMapEvents({
     mousedown: (e) => {
       if (drawing) {
@@ -69,21 +129,6 @@ function DrawingLayer({ drawing, onDraw }) {
       }
     },
     mouseup: () => {
-      endDrawing();
-    },
-    touchstart: (e) => {
-      if (drawing) {
-        e.originalEvent?.preventDefault();
-        startDrawing(e.latlng);
-      }
-    },
-    touchmove: (e) => {
-      if (drawing && isDrawing) {
-        e.originalEvent?.preventDefault();
-        continueDrawing(e.latlng);
-      }
-    },
-    touchend: () => {
       endDrawing();
     },
   });
