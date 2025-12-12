@@ -284,7 +284,12 @@ function Map() {
   };
 
   const openRatingModal = (road) => {
-    setRatingContext({ type: 'existing', roadId: road.id, roadName: road.name });
+    setRatingContext({
+      type: 'existing',
+      roadId: road.id,
+      roadName: road.name,
+      summary: road.rating_summary || null
+    });
   };
 
   const handleRoadSelect = (road, positions) => {
@@ -336,6 +341,11 @@ function Map() {
           roadName={ratingContext.roadName}
           showComment={ratingContext.type === 'existing'}
           isNewRoad={ratingContext.type === 'new'}
+          roadDetails={ratingContext.type === 'existing' ? {
+            summary: selectedRoadDetails.summary || ratingContext.summary,
+            ratings: selectedRoadDetails.ratings,
+            loading: selectedRoadDetails.loading
+          } : null}
         />
       )}
 
