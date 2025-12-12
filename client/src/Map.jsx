@@ -196,26 +196,53 @@ function DrawingLayer({ drawing, onDraw }) {
   const [currentPath, setCurrentPath] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
+  const startDrawing = (latlng) => {
+    const newPoint = [latlng.lat, latlng.lng];
+    setIsDrawing(true);
+    setCurrentPath([newPoint]);
+  };
+
+  const continueDrawing = (latlng) => {
+    const newPoint = [latlng.lat, latlng.lng];
+    setCurrentPath((prev) => [...prev, newPoint]);
+  };
+
+  const endDrawing = () => {
+    if (drawing && isDrawing) {
+      onDraw(currentPath);
+      setIsDrawing(false);
+      setCurrentPath([]);
+    }
+  };
+
   useMapEvents({
     mousedown: (e) => {
       if (drawing) {
-        setIsDrawing(true);
-        const newPoint = [e.latlng.lat, e.latlng.lng];
-        setCurrentPath([newPoint]);
+        startDrawing(e.latlng);
       }
     },
     mousemove: (e) => {
       if (drawing && isDrawing) {
-        const newPoint = [e.latlng.lat, e.latlng.lng];
-        setCurrentPath((prev) => [...prev, newPoint]);
+        continueDrawing(e.latlng);
       }
     },
     mouseup: () => {
-      if (drawing && isDrawing) {
-        onDraw(currentPath);
-        setIsDrawing(false);
-        setCurrentPath([]);
+      endDrawing();
+    },
+    touchstart: (e) => {
+      if (drawing) {
+        e.originalEvent?.preventDefault();
+        startDrawing(e.latlng);
       }
+    },
+    touchmove: (e) => {
+      if (drawing && isDrawing) {
+        e.originalEvent?.preventDefault();
+        continueDrawing(e.latlng);
+      }
+    },
+    touchend: () => {
+      endDrawing();
     },
   });
 
@@ -497,11 +524,11 @@ function Map() {
               </li>
               <li>
                 <span className="step-number">2</span>
-                Click once to start and trace along the road while holding the mouse.
+                Tap or click once to start, then trace along the road with your finger or mouse.
               </li>
               <li>
                 <span className="step-number">3</span>
-                Release to finish, then hit Save to rate your road.
+                Lift up to finish, then hit Save to rate your road.
               </li>
             </ol>
 

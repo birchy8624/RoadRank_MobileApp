@@ -97,3 +97,9 @@
   font-size: 0.75rem;
   color: var(--accent-primary);
 }
+
+@media (max-width: 768px) {
+  .legend {
+    display: none;
+  }
+}
