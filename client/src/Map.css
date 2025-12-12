@@ -9,7 +9,7 @@
 }
 
 .map-container .leaflet-pane .leaflet-tile {
-  filter: grayscale(1) sepia(0.25) hue-rotate(110deg) saturate(1.4) brightness(0.95);
+  filter: grayscale(1) sepia(0.10) hue-rotate(110deg) saturate(1.4) brightness(0.95);
   transition: filter 0.3s ease;
 }
 
