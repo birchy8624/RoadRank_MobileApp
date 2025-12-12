@@ -173,7 +173,7 @@ function RatingModal({
         <div className="modal-header">
           <h2>{isNewRoad ? 'Save your road' : `Rate ${roadName || 'this road'}`}</h2>
           <p className="modal-subtitle">
-            {isNewRoad ? 'Give it a name and rate your experience' : 'Share your experience with fellow riders'}
+            {isNewRoad ? 'Give it a name, rate your experience, and add your thoughts' : 'Share your experience with fellow riders'}
           </p>
         </div>
 

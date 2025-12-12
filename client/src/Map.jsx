@@ -349,7 +349,7 @@ function Map() {
           onSubmit={handleSubmitRating}
           onCancel={handleCancelRating}
           roadName={ratingContext.roadName}
-          showComment={ratingContext.type === 'existing'}
+          showComment={true}
           isNewRoad={ratingContext.type === 'new'}
           roadDetails={ratingContext.type === 'existing' ? {
             summary: selectedRoadDetails.summary || ratingContext.summary,
