@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Polyline, Popup, useMapEvents, useMap, ZoomControl } from 'react-leaflet';
 import axios from 'axios';
 import RatingModal from './RatingModal';
@@ -25,6 +25,7 @@ const FAKE_ROADS = [
     fun_factor: 5,
     scenery: 5,
     visibility: 4,
+    created_at: '2024-02-14T10:00:00Z',
   },
   {
     id: 'fake-2',
@@ -40,6 +41,7 @@ const FAKE_ROADS = [
     fun_factor: 5,
     scenery: 5,
     visibility: 3,
+    created_at: '2024-03-01T09:00:00Z',
   },
   {
     id: 'fake-3',
@@ -55,6 +57,7 @@ const FAKE_ROADS = [
     fun_factor: 4,
     scenery: 5,
     visibility: 4,
+    created_at: '2024-03-16T12:00:00Z',
   },
   {
     id: 'fake-4',
@@ -71,6 +74,7 @@ const FAKE_ROADS = [
     fun_factor: 5,
     scenery: 5,
     visibility: 3,
+    created_at: '2024-01-22T15:00:00Z',
   },
   {
     id: 'fake-5',
@@ -86,6 +90,7 @@ const FAKE_ROADS = [
     fun_factor: 4,
     scenery: 5,
     visibility: 4,
+    created_at: '2024-04-05T11:30:00Z',
   },
   {
     id: 'fake-6',
@@ -101,6 +106,7 @@ const FAKE_ROADS = [
     fun_factor: 4,
     scenery: 5,
     visibility: 5,
+    created_at: '2024-04-20T08:20:00Z',
   },
   {
     id: 'fake-7',
@@ -116,6 +122,7 @@ const FAKE_ROADS = [
     fun_factor: 4,
     scenery: 4,
     visibility: 3,
+    created_at: '2024-05-02T13:10:00Z',
   },
   {
     id: 'fake-8',
@@ -132,6 +139,7 @@ const FAKE_ROADS = [
     fun_factor: 3,
     scenery: 5,
     visibility: 4,
+    created_at: '2024-05-20T12:00:00Z',
   },
   {
     id: 'fake-9',
@@ -147,6 +155,7 @@ const FAKE_ROADS = [
     fun_factor: 4,
     scenery: 5,
     visibility: 4,
+    created_at: '2024-06-08T10:45:00Z',
   },
   {
     id: 'fake-10',
@@ -163,6 +172,7 @@ const FAKE_ROADS = [
     fun_factor: 5,
     scenery: 4,
     visibility: 4,
+    created_at: '2024-06-22T09:40:00Z',
   },
 ];
 
@@ -298,10 +308,13 @@ function Map() {
   const [roads, setRoads] = useState([]);
   const [drawing, setDrawing] = useState(false);
   const [drawnPath, setDrawnPath] = useState([]);
-  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingContext, setRatingContext] = useState(null);
   const [showDrawInstructions, setShowDrawInstructions] = useState(false);
   const [selectedRoad, setSelectedRoad] = useState(null);
+  const [selectedRoadDetails, setSelectedRoadDetails] = useState({ ratings: [], summary: null, loading: false });
   const mapRef = useRef(null);
+
+  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL, []);
 
   useEffect(() => {
     fetchRoads();
@@ -309,13 +322,11 @@ function Map() {
 
   const fetchRoads = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/roads`);
+      const response = await axios.get(`${apiBase}/api/roads`);
       const apiRoads = Array.isArray(response.data) ? response.data : [];
-      // Combine fake roads with API roads
       setRoads([...FAKE_ROADS, ...apiRoads]);
     } catch (error) {
       console.error('Error fetching roads:', error);
-      // If API fails, just show fake roads
       setRoads(FAKE_ROADS);
     }
   };
@@ -326,6 +337,8 @@ function Map() {
     return '#ef4444'; // Red
   };
 
+  const getRoadDisplayRating = (road) => road?.rating_summary?.avg_fun_factor || road?.fun_factor || 0;
+
   const handleDrawComplete = (path) => {
     if (path.length > 1) {
       setDrawnPath(path);
@@ -334,23 +347,30 @@ function Map() {
 
   const handleSaveRoute = () => {
     setDrawing(false);
-    setShowRatingModal(true);
+    setRatingContext({ type: 'new', path: drawnPath });
   };
 
   const handleCancelRating = () => {
-    setShowRatingModal(false);
+    setRatingContext(null);
     setDrawnPath([]);
   };
 
   const handleSubmitRating = async (ratings) => {
     try {
+      if (ratingContext?.type === 'existing') {
+        await axios.post(`${apiBase}/api/roads/${ratingContext.roadId}/ratings`, ratings);
+        await fetchSelectedRoadRatings(ratingContext.roadId);
+        setRatingContext(null);
+        return;
+      }
+
       const newRoad = {
         path: drawnPath.map(([lat, lng]) => ({ lat, lng })),
         ...ratings,
       };
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/roads`, newRoad);
+      const response = await axios.post(`${apiBase}/api/roads`, newRoad);
       setRoads([...roads, response.data]);
-      setShowRatingModal(false);
+      setRatingContext(null);
       setDrawnPath([]);
     } catch (error) {
       console.error('Error saving road:', error);
@@ -359,9 +379,10 @@ function Map() {
         id: `local-${Date.now()}`,
         path: JSON.stringify(drawnPath.map(([lat, lng]) => ({ lat, lng }))),
         ...ratings,
+        created_at: new Date().toISOString(),
       };
       setRoads([...roads, localRoad]);
-      setShowRatingModal(false);
+      setRatingContext(null);
       setDrawnPath([]);
     }
   };
@@ -388,9 +409,70 @@ function Map() {
     setShowDrawInstructions(false);
   };
 
+  const fetchSelectedRoadRatings = async (roadId) => {
+    setSelectedRoadDetails((prev) => ({ ...prev, loading: true }));
+    try {
+      const response = await axios.get(`${apiBase}/api/roads/${roadId}/ratings`);
+      setSelectedRoadDetails({
+        ratings: response.data.ratings || [],
+        summary: response.data.summary,
+        loading: false,
+      });
+    } catch (error) {
+      console.error('Error fetching road ratings:', error);
+      setSelectedRoadDetails({ ratings: [], summary: null, loading: false });
+    }
+  };
+
+  const handleRoadSelect = (road, positions) => {
+    const middleIndex = Math.floor(positions.length / 2);
+    setSelectedRoad({ ...road, middlePosition: positions[middleIndex] });
+    setSelectedRoadDetails({ ratings: [], summary: road.rating_summary || null, loading: true });
+    fetchSelectedRoadRatings(road.id);
+  };
+
+  const formatDate = (value) => {
+    if (!value) return 'Unknown';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Unknown';
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+
+  const selectedSummary = useMemo(() => {
+    if (!selectedRoad) return null;
+    const fallback = {
+      avg_twistiness: selectedRoad.twistiness || null,
+      avg_surface_condition: selectedRoad.surface_condition || null,
+      avg_fun_factor: selectedRoad.fun_factor || null,
+      avg_scenery: selectedRoad.scenery || null,
+      avg_visibility: selectedRoad.visibility || null,
+      avg_overall:
+        selectedRoad.twistiness && selectedRoad.surface_condition && selectedRoad.fun_factor &&
+        selectedRoad.scenery && selectedRoad.visibility
+          ? (
+            selectedRoad.twistiness +
+            selectedRoad.surface_condition +
+            selectedRoad.fun_factor +
+            selectedRoad.scenery +
+            selectedRoad.visibility
+          ) / 5
+          : null,
+      rating_count: selectedRoad.rating_summary?.rating_count || (selectedRoad.twistiness ? 1 : 0),
+    };
+
+    return selectedRoadDetails.summary || selectedRoad.rating_summary || fallback;
+  }, [selectedRoad, selectedRoadDetails.summary]);
+
   return (
     <>
-      {showRatingModal && <RatingModal onSubmit={handleSubmitRating} onCancel={handleCancelRating} />}
+      {ratingContext && (
+        <RatingModal
+          onSubmit={handleSubmitRating}
+          onCancel={handleCancelRating}
+          roadName={ratingContext.roadName}
+          showComment={ratingContext.type === 'existing'}
+        />
+      )}
 
       {showDrawInstructions && (
         <div className="draw-overlay" onClick={handleCloseInstructions}>
@@ -483,19 +565,18 @@ function Map() {
             if (!Array.isArray(path)) return null;
 
             const positions = path.map((p) => [p.lat, p.lng]);
-            const middleIndex = Math.floor(positions.length / 2);
 
             return (
               <Polyline
                 key={road.id}
                 positions={positions}
                 pathOptions={{
-                  color: getRoadColor(road.fun_factor),
+                  color: getRoadColor(getRoadDisplayRating(road)),
                   opacity: 0.8,
                   weight: 5,
                 }}
                 eventHandlers={{
-                  click: () => setSelectedRoad({ ...road, middlePosition: positions[middleIndex] }),
+                  click: () => handleRoadSelect({ ...road, path }, positions),
                 }}
               >
                 {selectedRoad && selectedRoad.id === road.id && (
@@ -506,27 +587,64 @@ function Map() {
                     <div className="popup-content">
                       {selectedRoad.name && <h3 className="popup-title">{selectedRoad.name}</h3>}
                       {!selectedRoad.name && <h3 className="popup-title">Road Details</h3>}
-                      <div className="popup-ratings">
+
+                      <div className="popup-meta">
+                        <span className="pill">Added {formatDate(selectedRoad.created_at)}</span>
+                        <span className="pill neutral">
+                          {selectedSummary?.avg_overall ? `${selectedSummary.avg_overall.toFixed(1)}/5 avg` : 'No ratings yet'}
+                          {selectedSummary?.rating_count ? ` · ${selectedSummary.rating_count} ratings` : ''}
+                        </span>
+                      </div>
+
+                      <div className="popup-ratings-grid">
                         <div className="popup-rating-item">
                           <span className="rating-label">🌀 Twistiness</span>
-                          <span className="rating-value">{selectedRoad.twistiness}/5</span>
+                          <span className="rating-value">{selectedSummary?.avg_twistiness?.toFixed(1) || '—'}/5</span>
                         </div>
                         <div className="popup-rating-item">
                           <span className="rating-label">🛤️ Surface</span>
-                          <span className="rating-value">{selectedRoad.surface_condition}/5</span>
+                          <span className="rating-value">{selectedSummary?.avg_surface_condition?.toFixed(1) || '—'}/5</span>
                         </div>
                         <div className="popup-rating-item">
                           <span className="rating-label">⚡ Fun Factor</span>
-                          <span className="rating-value">{selectedRoad.fun_factor}/5</span>
+                          <span className="rating-value">{selectedSummary?.avg_fun_factor?.toFixed(1) || '—'}/5</span>
                         </div>
                         <div className="popup-rating-item">
                           <span className="rating-label">🏞️ Scenery</span>
-                          <span className="rating-value">{selectedRoad.scenery}/5</span>
+                          <span className="rating-value">{selectedSummary?.avg_scenery?.toFixed(1) || '—'}/5</span>
                         </div>
                         <div className="popup-rating-item">
                           <span className="rating-label">👁️ Visibility</span>
-                          <span className="rating-value">{selectedRoad.visibility}/5</span>
+                          <span className="rating-value">{selectedSummary?.avg_visibility?.toFixed(1) || '—'}/5</span>
                         </div>
+                      </div>
+
+                      <div className="popup-actions">
+                        <button
+                          className="secondary"
+                          onClick={() => setRatingContext({ type: 'existing', roadId: selectedRoad.id, roadName: selectedRoad.name })}
+                        >
+                          Add your rating
+                        </button>
+                      </div>
+
+                      <div className="popup-comments">
+                        <div className="popup-comments-header">
+                          <h4>Community feedback</h4>
+                          {selectedRoadDetails.loading && <span className="chip">Loading…</span>}
+                        </div>
+                        {selectedRoadDetails.ratings.length === 0 && !selectedRoadDetails.loading && (
+                          <p className="muted">No ratings yet. Be the first to share your take.</p>
+                        )}
+                        {selectedRoadDetails.ratings.map((rating) => (
+                          <div key={rating.id} className="comment-card">
+                            <div className="comment-meta">
+                              <span className="comment-date">{formatDate(rating.created_at)}</span>
+                              <span className="comment-score">{(((rating.twistiness + rating.surface_condition + rating.fun_factor + rating.scenery + rating.visibility) / 5) || 0).toFixed(1)}/5</span>
+                            </div>
+                            {rating.comment && <p className="comment-body">{rating.comment}</p>}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </Popup>

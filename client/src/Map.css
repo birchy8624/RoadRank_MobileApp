@@ -228,7 +228,7 @@
 .leaflet-popup-content {
   margin: 16px 20px;
   font-family: inherit;
-  min-width: 240px;
+  min-width: 260px;
 }
 
 .popup-content {
@@ -244,12 +244,6 @@
   font-weight: 700;
   padding-bottom: 12px;
   border-bottom: 2px solid var(--border);
-}
-
-.popup-ratings {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .popup-rating-item {
@@ -272,6 +266,122 @@
   background: rgba(14, 165, 233, 0.1);
   padding: 4px 12px;
   border-radius: 8px;
+}
+
+.popup-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.pill.neutral {
+  background: rgba(14, 165, 233, 0.06);
+  color: var(--accent-primary);
+  border-color: rgba(14, 165, 233, 0.25);
+}
+
+.popup-ratings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.popup-actions button.secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.popup-comments {
+  border-top: 1px solid var(--border);
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popup-comments-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.popup-comments h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.comment-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.comment-date {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.comment-score {
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: rgba(14, 165, 233, 0.12);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.comment-body {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.muted {
+  color: var(--text-tertiary);
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 .leaflet-popup-tip {

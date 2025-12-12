@@ -17,7 +17,7 @@ const ratingDescriptions = [
   'Excellent'
 ];
 
-function RatingModal({ onSubmit, onCancel }) {
+function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
   const [ratings, setRatings] = useState({
     twistiness: 3,
     surface_condition: 3,
@@ -26,13 +26,18 @@ function RatingModal({ onSubmit, onCancel }) {
     visibility: 3,
   });
 
+  const [comment, setComment] = useState('');
+
   const handleChange = (e) => {
     setRatings({ ...ratings, [e.target.name]: Number(e.target.value) });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(ratings);
+    onSubmit({
+      ...ratings,
+      ...(showComment ? { comment } : {}),
+    });
   };
 
   return (
@@ -40,7 +45,7 @@ function RatingModal({ onSubmit, onCancel }) {
       <div className="modal-overlay" onClick={onCancel} />
       <div className="modal-container">
         <div className="modal-header">
-          <h2>Rate this Road</h2>
+          <h2>Rate {roadName || 'this road'}</h2>
           <p className="modal-subtitle">Share your experience with fellow riders</p>
         </div>
 
@@ -88,6 +93,19 @@ function RatingModal({ onSubmit, onCancel }) {
               </div>
             ))}
           </div>
+
+          {showComment && (
+            <div className="comment-field">
+              <label htmlFor="comment">Add a short note</label>
+              <textarea
+                id="comment"
+                name="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="What made this road special? Surface quality, scenery, traffic..."
+              />
+            </div>
+          )}
 
           <div className="modal-actions">
             <button type="button" onClick={onCancel} className="button-secondary">
