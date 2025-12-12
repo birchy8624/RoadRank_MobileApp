@@ -8,174 +8,6 @@ import logo from './assets/roadrank-logo.svg';
 
 const center = [54.0, -2.0]; // [lat, lng] for Leaflet
 
-// 10 Preloaded fake roads with realistic UK routes and ratings
-const FAKE_ROADS = [
-  {
-    id: 'fake-1',
-    name: 'Snake Pass (A57)',
-    path: [
-      { lat: 53.4040, lng: -1.8186 },
-      { lat: 53.4050, lng: -1.8300 },
-      { lat: 53.4070, lng: -1.8450 },
-      { lat: 53.4100, lng: -1.8600 },
-      { lat: 53.4120, lng: -1.8750 },
-    ],
-    twistiness: 5,
-    surface_condition: 3,
-    fun_factor: 5,
-    scenery: 5,
-    visibility: 4,
-    created_at: '2024-02-14T10:00:00Z',
-  },
-  {
-    id: 'fake-2',
-    name: 'Cat and Fiddle (A537)',
-    path: [
-      { lat: 53.2650, lng: -2.0200 },
-      { lat: 53.2700, lng: -2.0100 },
-      { lat: 53.2750, lng: -2.0000 },
-      { lat: 53.2800, lng: -1.9900 },
-    ],
-    twistiness: 4,
-    surface_condition: 4,
-    fun_factor: 5,
-    scenery: 5,
-    visibility: 3,
-    created_at: '2024-03-01T09:00:00Z',
-  },
-  {
-    id: 'fake-3',
-    name: 'Hardknott Pass',
-    path: [
-      { lat: 54.4010, lng: -3.2100 },
-      { lat: 54.4050, lng: -3.2000 },
-      { lat: 54.4090, lng: -3.1900 },
-      { lat: 54.4120, lng: -3.1800 },
-    ],
-    twistiness: 5,
-    surface_condition: 2,
-    fun_factor: 4,
-    scenery: 5,
-    visibility: 4,
-    created_at: '2024-03-16T12:00:00Z',
-  },
-  {
-    id: 'fake-4',
-    name: 'Bealach na Bà',
-    path: [
-      { lat: 57.3800, lng: -5.7500 },
-      { lat: 57.3850, lng: -5.7400 },
-      { lat: 57.3900, lng: -5.7300 },
-      { lat: 57.3950, lng: -5.7200 },
-      { lat: 57.4000, lng: -5.7100 },
-    ],
-    twistiness: 5,
-    surface_condition: 3,
-    fun_factor: 5,
-    scenery: 5,
-    visibility: 3,
-    created_at: '2024-01-22T15:00:00Z',
-  },
-  {
-    id: 'fake-5',
-    name: 'Buttertubs Pass (B6270)',
-    path: [
-      { lat: 54.3600, lng: -2.1800 },
-      { lat: 54.3650, lng: -2.1700 },
-      { lat: 54.3700, lng: -2.1600 },
-      { lat: 54.3750, lng: -2.1500 },
-    ],
-    twistiness: 4,
-    surface_condition: 4,
-    fun_factor: 4,
-    scenery: 5,
-    visibility: 4,
-    created_at: '2024-04-05T11:30:00Z',
-  },
-  {
-    id: 'fake-6',
-    name: 'Loch Ness Scenic Route',
-    path: [
-      { lat: 57.3200, lng: -4.4200 },
-      { lat: 57.3100, lng: -4.4100 },
-      { lat: 57.3000, lng: -4.4000 },
-      { lat: 57.2900, lng: -4.3900 },
-    ],
-    twistiness: 3,
-    surface_condition: 5,
-    fun_factor: 4,
-    scenery: 5,
-    visibility: 5,
-    created_at: '2024-04-20T08:20:00Z',
-  },
-  {
-    id: 'fake-7',
-    name: 'Wrynose Pass',
-    path: [
-      { lat: 54.4300, lng: -3.1100 },
-      { lat: 54.4350, lng: -3.1000 },
-      { lat: 54.4400, lng: -3.0900 },
-      { lat: 54.4450, lng: -3.0800 },
-    ],
-    twistiness: 5,
-    surface_condition: 3,
-    fun_factor: 4,
-    scenery: 4,
-    visibility: 3,
-    created_at: '2024-05-02T13:10:00Z',
-  },
-  {
-    id: 'fake-8',
-    name: 'Cairngorms Pass (A939)',
-    path: [
-      { lat: 57.2200, lng: -3.3200 },
-      { lat: 57.2250, lng: -3.3100 },
-      { lat: 57.2300, lng: -3.3000 },
-      { lat: 57.2350, lng: -3.2900 },
-      { lat: 57.2400, lng: -3.2800 },
-    ],
-    twistiness: 3,
-    surface_condition: 4,
-    fun_factor: 3,
-    scenery: 5,
-    visibility: 4,
-    created_at: '2024-05-20T12:00:00Z',
-  },
-  {
-    id: 'fake-9',
-    name: 'Rest and Be Thankful (A83)',
-    path: [
-      { lat: 56.2300, lng: -4.7500 },
-      { lat: 56.2350, lng: -4.7400 },
-      { lat: 56.2400, lng: -4.7300 },
-      { lat: 56.2450, lng: -4.7200 },
-    ],
-    twistiness: 4,
-    surface_condition: 4,
-    fun_factor: 4,
-    scenery: 5,
-    visibility: 4,
-    created_at: '2024-06-08T10:45:00Z',
-  },
-  {
-    id: 'fake-10',
-    name: 'Evo Triangle (B4391/B5105/A543)',
-    path: [
-      { lat: 53.0900, lng: -3.5200 },
-      { lat: 53.0950, lng: -3.5100 },
-      { lat: 53.1000, lng: -3.5000 },
-      { lat: 53.1050, lng: -3.4900 },
-      { lat: 53.1100, lng: -3.4800 },
-    ],
-    twistiness: 5,
-    surface_condition: 4,
-    fun_factor: 5,
-    scenery: 4,
-    visibility: 4,
-    created_at: '2024-06-22T09:40:00Z',
-  },
-];
-
 // Component to disable dragging when in draw mode
 function MapController({ drawing }) {
   const map = useMap();
@@ -341,7 +173,7 @@ function Map() {
   const [selectedRoadDetails, setSelectedRoadDetails] = useState({ ratings: [], summary: null, loading: false });
   const mapRef = useRef(null);
 
-  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL, []);
+  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || '', []);
 
   useEffect(() => {
     fetchRoads();
@@ -351,10 +183,10 @@ function Map() {
     try {
       const response = await axios.get(`${apiBase}/api/roads`);
       const apiRoads = Array.isArray(response.data) ? response.data : [];
-      setRoads([...FAKE_ROADS, ...apiRoads]);
+      setRoads(apiRoads);
     } catch (error) {
       console.error('Error fetching roads:', error);
-      setRoads(FAKE_ROADS);
+      setRoads([]);
     }
   };
 

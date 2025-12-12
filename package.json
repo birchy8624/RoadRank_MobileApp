@@ -1,0 +1,22 @@
+{
+  "name": "roadrank",
+  "version": "1.0.0",
+  "description": "Rate and discover the best driving roads",
+  "main": "index.js",
+  "scripts": {
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "cd client && npm run build",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/birchy8624/RoadRank"
+  },
+  "keywords": ["roads", "driving", "rating", "maps"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.87.1"
+  }
+}
