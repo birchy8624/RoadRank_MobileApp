@@ -525,3 +525,77 @@
 .draw-modal-actions .ghost:hover {
   background: #e2e8f0;
 }
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .map-container {
+    border-radius: 0;
+  }
+
+  .map-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    left: 8px;
+    right: 8px;
+    padding: 12px;
+  }
+
+  .brand-chip {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .topbar-search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .search-input-wrapper {
+    min-height: 52px;
+  }
+
+  .search-results {
+    position: absolute;
+    max-height: 50vh;
+    left: 0;
+    right: 0;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .topbar-actions button {
+    flex: 1 1 48%;
+    justify-content: center;
+  }
+
+  .leaflet-control-container .leaflet-top.leaflet-left {
+    top: 90px;
+  }
+
+  .draw-overlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .draw-modal {
+    width: 100%;
+    max-width: none;
+    border-radius: 18px 18px 0 0;
+    padding: 20px;
+  }
+
+  .draw-modal-actions {
+    flex-direction: column;
+  }
+
+  .draw-modal-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
