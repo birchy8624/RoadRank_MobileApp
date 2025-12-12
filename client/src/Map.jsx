@@ -389,6 +389,22 @@ function Map() {
 
       <SearchBox onLocationFound={handleLocationFound} />
 
+      <div className="info-panel">
+        <div className="info-panel__header">
+          <p className="eyebrow">Experience kit</p>
+          <h3>Map-first ride builder</h3>
+        </div>
+        <p>
+          Search for destinations, draw custom lines, and rate every road with our refreshed glass UI
+          library.
+        </p>
+        <ul>
+          <li>Fly-to search with location previews</li>
+          <li>Draw, save, and instantly open the rating modal</li>
+          <li>Tap any polyline to view the full rating breakdown</li>
+        </ul>
+      </div>
+
       <div className="controls-container">
         {!drawing && (
           <button onClick={() => setDrawing(true)} className="control-button">
