@@ -46,6 +46,8 @@
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(16, 185, 129, 0.14));
   border: 1px solid rgba(14, 165, 233, 0.2);
   box-shadow: 0 12px 30px -16px rgba(14, 165, 233, 0.5);
+  justify-content: center;
+  text-align: center;
 }
 
 .brand-chip img {
@@ -543,7 +545,7 @@
 
   .brand-chip {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .topbar-search {
