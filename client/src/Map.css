@@ -188,19 +188,19 @@
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  background: var(--brand-gradient);
   color: #fff;
   box-shadow: 0 14px 28px -14px rgba(14, 165, 233, 0.6);
 }
 
 .topbar-actions button.secondary {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  box-shadow: 0 14px 28px -14px rgba(249, 115, 22, 0.6);
+  background: var(--brand-gradient);
+  box-shadow: 0 14px 28px -14px rgba(14, 165, 233, 0.6);
 }
 
 .topbar-actions button.destructive {
-  background: linear-gradient(135deg, #475569, #0f172a);
-  box-shadow: 0 14px 28px -14px rgba(15, 23, 42, 0.5);
+  background: var(--brand-gradient);
+  box-shadow: 0 14px 28px -14px rgba(14, 165, 233, 0.6);
 }
 
 .topbar-actions button:hover {
