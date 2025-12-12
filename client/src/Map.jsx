@@ -299,6 +299,7 @@ function Map() {
   const [drawing, setDrawing] = useState(false);
   const [drawnPath, setDrawnPath] = useState([]);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showDrawInstructions, setShowDrawInstructions] = useState(false);
   const [selectedRoad, setSelectedRoad] = useState(null);
   const mapRef = useRef(null);
 
@@ -373,9 +374,59 @@ function Map() {
     }
   };
 
+  const handleOpenDrawInstructions = () => {
+    setSelectedRoad(null);
+    setShowDrawInstructions(true);
+  };
+
+  const handleStartDrawing = () => {
+    setShowDrawInstructions(false);
+    setDrawing(true);
+  };
+
+  const handleCloseInstructions = () => {
+    setShowDrawInstructions(false);
+  };
+
   return (
     <>
       {showRatingModal && <RatingModal onSubmit={handleSubmitRating} onCancel={handleCancelRating} />}
+
+      {showDrawInstructions && (
+        <div className="draw-overlay" onClick={handleCloseInstructions}>
+          <div className="draw-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="draw-modal-header">
+              <div className="draw-modal-badge">✏️</div>
+              <div>
+                <h2>Draw your route</h2>
+                <p>Follow these quick tips before you start tracing.</p>
+              </div>
+            </div>
+
+            <ol className="draw-steps">
+              <li>
+                <span className="step-number">1</span>
+                Move the map to the road you want to trace.
+              </li>
+              <li>
+                <span className="step-number">2</span>
+                Click once to start and trace along the road while holding the mouse.
+              </li>
+              <li>
+                <span className="step-number">3</span>
+                Release to finish, then hit Save to rate your road.
+              </li>
+            </ol>
+
+            <div className="draw-modal-actions">
+              <button className="ghost" onClick={handleCloseInstructions}>
+                Cancel
+              </button>
+              <button onClick={handleStartDrawing}>Start Drawing</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="map-topbar">
         <div className="brand-chip">
@@ -389,7 +440,7 @@ function Map() {
 
         <div className="topbar-actions">
           {!drawing && (
-            <button onClick={() => setDrawing(true)}>
+            <button onClick={handleOpenDrawInstructions}>
               ✏️ Draw
             </button>
           )}
