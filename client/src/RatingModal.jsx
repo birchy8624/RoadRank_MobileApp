@@ -41,9 +41,8 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
   };
 
   return (
-    <>
-      <div className="modal-overlay" onClick={onCancel} />
-      <div className="modal-container">
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Rate {roadName || 'this road'}</h2>
           <p className="modal-subtitle">Share your experience with fellow riders</p>
@@ -117,7 +116,7 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
 
