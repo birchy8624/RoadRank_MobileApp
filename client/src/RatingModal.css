@@ -1,19 +1,16 @@
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(15, 23, 42, 0.45);
   z-index: 2000;
   animation: fadeIn 0.2s ease;
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
 .modal-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   background: white;
   padding: 32px;
   border-radius: 24px;
@@ -39,11 +36,11 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translate(-50%, -45%);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateY(0);
   }
 }
 
@@ -209,6 +206,29 @@
 .rating-dot.active {
   background: var(--accent-primary);
   box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
+}
+
+.comment-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comment-field label {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.comment-field textarea {
+  min-height: 96px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background: var(--surface);
 }
 
 .modal-actions {
