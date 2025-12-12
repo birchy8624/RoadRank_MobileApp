@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Polyline, Popup, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Popup, useMapEvents, useMap, ZoomControl } from 'react-leaflet';
 import axios from 'axios';
 import RatingModal from './RatingModal';
 import 'leaflet/dist/leaflet.css';
@@ -413,12 +413,15 @@ function Map() {
         center={center}
         zoom={6}
         className="map-container"
+        zoomControl={false}
         style={{ cursor: drawing ? 'crosshair' : 'grab' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        <ZoomControl position="bottomright" />
 
         <MapController drawing={drawing} />
         <DrawingLayer drawing={drawing} onDraw={handleDrawComplete} />
