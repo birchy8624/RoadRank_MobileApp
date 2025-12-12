@@ -274,8 +274,7 @@
 }
 
 /* Position zoom controls in the bottom right corner */
-.leaflet-top.leaflet-right {
-  top: auto;
+.leaflet-bottom.leaflet-right {
   bottom: 18px;
   right: 18px;
 }
