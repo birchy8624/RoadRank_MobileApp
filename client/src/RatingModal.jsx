@@ -17,7 +17,17 @@ const ratingDescriptions = [
   'Excellent'
 ];
 
-function RatingModal({ onSubmit, onCancel, roadName, showComment = false, isNewRoad = false }) {
+function RatingModal({
+  onSubmit,
+  onCancel,
+  roadName,
+  showComment = false,
+  isNewRoad = false,
+  roadDetails = null // { summary, ratings, loading }
+}) {
+  // For existing roads, start in 'details' view; for new roads, start in 'rate' view
+  const [viewMode, setViewMode] = useState(isNewRoad ? 'rate' : 'details');
+
   const [ratings, setRatings] = useState({
     twistiness: 3,
     surface_condition: 3,
@@ -42,6 +52,121 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false, isNewR
     });
   };
 
+  const formatDate = (value) => {
+    if (!value) return 'Unknown';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Unknown';
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+
+  const summary = roadDetails?.summary;
+  const existingRatings = roadDetails?.ratings || [];
+  const loading = roadDetails?.loading || false;
+
+  // Details view for existing roads
+  if (viewMode === 'details' && !isNewRoad) {
+    return (
+      <div className="modal-overlay" onClick={onCancel}>
+        <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>{roadName || 'Road Details'}</h2>
+            <p className="modal-subtitle">
+              {summary?.rating_count
+                ? `${summary.rating_count} rating${summary.rating_count !== 1 ? 's' : ''} from the community`
+                : 'No ratings yet'}
+            </p>
+          </div>
+
+          {/* Average Ratings Section */}
+          <div className="details-section">
+            <h3 className="details-section-title">Average Ratings</h3>
+            {summary?.avg_overall ? (
+              <>
+                <div className="overall-rating">
+                  <span className="overall-score">{summary.avg_overall.toFixed(1)}</span>
+                  <span className="overall-label">/ 5 overall</span>
+                </div>
+                <div className="details-ratings-grid">
+                  <div className="details-rating-item">
+                    <span className="details-rating-icon">🌀</span>
+                    <span className="details-rating-label">Twistiness</span>
+                    <span className="details-rating-value">{summary.avg_twistiness?.toFixed(1) || '—'}</span>
+                  </div>
+                  <div className="details-rating-item">
+                    <span className="details-rating-icon">🛤️</span>
+                    <span className="details-rating-label">Surface</span>
+                    <span className="details-rating-value">{summary.avg_surface_condition?.toFixed(1) || '—'}</span>
+                  </div>
+                  <div className="details-rating-item">
+                    <span className="details-rating-icon">⚡</span>
+                    <span className="details-rating-label">Fun Factor</span>
+                    <span className="details-rating-value">{summary.avg_fun_factor?.toFixed(1) || '—'}</span>
+                  </div>
+                  <div className="details-rating-item">
+                    <span className="details-rating-icon">🏞️</span>
+                    <span className="details-rating-label">Scenery</span>
+                    <span className="details-rating-value">{summary.avg_scenery?.toFixed(1) || '—'}</span>
+                  </div>
+                  <div className="details-rating-item">
+                    <span className="details-rating-icon">👁️</span>
+                    <span className="details-rating-label">Visibility</span>
+                    <span className="details-rating-value">{summary.avg_visibility?.toFixed(1) || '—'}</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="no-ratings-message">No ratings yet. Be the first to rate this road!</p>
+            )}
+          </div>
+
+          {/* Comments Section */}
+          <div className="details-section">
+            <h3 className="details-section-title">
+              Comments
+              {loading && <span className="loading-indicator">Loading...</span>}
+            </h3>
+            <div className="details-comments-list">
+              {!loading && existingRatings.length === 0 && (
+                <p className="no-comments-message">No comments yet. Share your experience!</p>
+              )}
+              {existingRatings.map((rating) => (
+                <div key={rating.id} className="details-comment-card">
+                  <div className="details-comment-header">
+                    <span className="details-comment-date">{formatDate(rating.created_at)}</span>
+                    <span className="details-comment-score">
+                      {(((rating.twistiness + rating.surface_condition + rating.fun_factor + rating.scenery + rating.visibility) / 5) || 0).toFixed(1)}/5
+                    </span>
+                  </div>
+                  {rating.comment && (
+                    <p className="details-comment-body">{rating.comment}</p>
+                  )}
+                  {!rating.comment && (
+                    <p className="details-comment-body no-comment">No comment provided</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="modal-actions">
+            <button type="button" onClick={onCancel} className="button-secondary">
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('rate')}
+              className="button-primary"
+            >
+              Add a Rating
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Rating form view (existing behavior)
   return (
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
@@ -126,9 +251,16 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false, isNewR
           )}
 
           <div className="modal-actions">
-            <button type="button" onClick={onCancel} className="button-secondary">
-              Cancel
-            </button>
+            {!isNewRoad && (
+              <button type="button" onClick={() => setViewMode('details')} className="button-secondary">
+                Back
+              </button>
+            )}
+            {isNewRoad && (
+              <button type="button" onClick={onCancel} className="button-secondary">
+                Cancel
+              </button>
+            )}
             <button type="submit" className="button-primary">
               Submit Rating
             </button>
