@@ -1,3 +1,7 @@
+-- RoadRank Supabase Schema
+-- Run this in the Supabase SQL Editor to set up your database
+
+-- Create roads table
 CREATE TABLE IF NOT EXISTS roads (
     id SERIAL PRIMARY KEY,
     path JSONB NOT NULL,
@@ -10,6 +14,7 @@ CREATE TABLE IF NOT EXISTS roads (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Create road_ratings table
 CREATE TABLE IF NOT EXISTS road_ratings (
     id SERIAL PRIMARY KEY,
     road_id TEXT NOT NULL,
@@ -21,3 +26,25 @@ CREATE TABLE IF NOT EXISTS road_ratings (
     comment TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Create indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_road_ratings_road_id ON road_ratings(road_id);
+CREATE INDEX IF NOT EXISTS idx_roads_created_at ON roads(created_at DESC);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE roads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE road_ratings ENABLE ROW LEVEL SECURITY;
+
+-- Create policies to allow public read/write access
+-- (For a production app, you'd want to restrict write access to authenticated users)
+CREATE POLICY "Allow public read access on roads" ON roads
+    FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert access on roads" ON roads
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public read access on road_ratings" ON road_ratings
+    FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert access on road_ratings" ON road_ratings
+    FOR INSERT WITH CHECK (true);

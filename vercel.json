@@ -3,7 +3,15 @@
   "outputDirectory": "client/dist",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/roads/:id/ratings",
+      "destination": "/api/roads/[id]/ratings"
+    },
+    {
+      "source": "/api/roads",
+      "destination": "/api/roads"
+    },
+    {
+      "source": "/((?!api).*)",
       "destination": "/index.html"
     }
   ]
