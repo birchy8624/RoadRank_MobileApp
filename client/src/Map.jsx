@@ -335,6 +335,7 @@ function Map() {
           onCancel={handleCancelRating}
           roadName={ratingContext.roadName}
           showComment={ratingContext.type === 'existing'}
+          isNewRoad={ratingContext.type === 'new'}
         />
       )}
 

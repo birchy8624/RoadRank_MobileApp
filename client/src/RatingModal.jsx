@@ -17,7 +17,7 @@ const ratingDescriptions = [
   'Excellent'
 ];
 
-function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
+function RatingModal({ onSubmit, onCancel, roadName, showComment = false, isNewRoad = false }) {
   const [ratings, setRatings] = useState({
     twistiness: 3,
     surface_condition: 3,
@@ -27,6 +27,7 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
   });
 
   const [comment, setComment] = useState('');
+  const [name, setName] = useState('');
 
   const handleChange = (e) => {
     setRatings({ ...ratings, [e.target.name]: Number(e.target.value) });
@@ -37,6 +38,7 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
     onSubmit({
       ...ratings,
       ...(showComment ? { comment } : {}),
+      ...(isNewRoad ? { name: name.trim() || null } : {}),
     });
   };
 
@@ -44,11 +46,28 @@ function RatingModal({ onSubmit, onCancel, roadName, showComment = false }) {
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Rate {roadName || 'this road'}</h2>
-          <p className="modal-subtitle">Share your experience with fellow riders</p>
+          <h2>{isNewRoad ? 'Save your road' : `Rate ${roadName || 'this road'}`}</h2>
+          <p className="modal-subtitle">
+            {isNewRoad ? 'Give it a name and rate your experience' : 'Share your experience with fellow riders'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="modal-form">
+          {isNewRoad && (
+            <div className="name-field">
+              <label htmlFor="road-name">Road Name</label>
+              <input
+                type="text"
+                id="road-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., Snake Pass, Cat and Fiddle..."
+                className="name-input"
+                autoFocus
+              />
+            </div>
+          )}
+
           <div className="rating-grid">
             {Object.entries(ratings).map(([key, value]) => (
               <div key={key} className="rating-item">
