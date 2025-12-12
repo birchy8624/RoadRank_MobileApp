@@ -495,6 +495,7 @@ function Map() {
             if (!Array.isArray(path)) return null;
 
             const positions = path.map((p) => [p.lat, p.lng]);
+            const roadName = road.name || 'Unnamed road';
 
             return (
               <Polyline
@@ -509,6 +510,9 @@ function Map() {
                   click: () => handleRoadSelect({ ...road, path }, positions),
                 }}
               >
+                <Tooltip className="road-tooltip" sticky>
+                  {roadName}
+                </Tooltip>
                 {selectedRoad && selectedRoad.id === road.id && (
                   <Popup
                     position={selectedRoad.middlePosition}

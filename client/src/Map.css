@@ -393,6 +393,21 @@
   line-height: 1.5;
 }
 
+.road-tooltip {
+  background: rgba(17, 24, 39, 0.92);
+  color: #f8fafc;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.35);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.road-tooltip:before {
+  border-top-color: rgba(17, 24, 39, 0.92);
+}
+
 .muted {
   color: var(--text-tertiary);
   margin: 0;
