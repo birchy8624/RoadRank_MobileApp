@@ -19,6 +19,7 @@
   --accent-secondary: #f59e0b;
   --accent-danger: #ef4444;
   --accent-success: #10b981;
+  --brand-gradient: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -78,16 +79,15 @@ button {
   font-size: 0.95rem;
   font-weight: 600;
   font-family: inherit;
-  background-color: var(--surface);
-  color: var(--text-primary);
+  background: var(--brand-gradient);
+  color: white;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
 }
 
 button:hover {
-  background-color: var(--surface-hover);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -105,7 +105,7 @@ button:focus-visible {
 
 /* Primary button variant */
 button.primary {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, #0284c7 100%);
+  background: var(--brand-gradient);
   color: white;
   border: none;
   box-shadow: var(--shadow-md);
