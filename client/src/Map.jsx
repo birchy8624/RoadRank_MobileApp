@@ -424,11 +424,16 @@ function Map() {
     }
   };
 
+  const openRatingModal = (road) => {
+    setRatingContext({ type: 'existing', roadId: road.id, roadName: road.name });
+  };
+
   const handleRoadSelect = (road, positions) => {
     const middleIndex = Math.floor(positions.length / 2);
     setSelectedRoad({ ...road, middlePosition: positions[middleIndex] });
     setSelectedRoadDetails({ ratings: [], summary: road.rating_summary || null, loading: true });
     fetchSelectedRoadRatings(road.id);
+    openRatingModal(road);
   };
 
   const formatDate = (value) => {
@@ -622,7 +627,7 @@ function Map() {
                       <div className="popup-actions">
                         <button
                           className="secondary"
-                          onClick={() => setRatingContext({ type: 'existing', roadId: selectedRoad.id, roadName: selectedRoad.name })}
+                          onClick={() => openRatingModal(selectedRoad)}
                         >
                           Add your rating
                         </button>
