@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, Polyline, Popup, useMapEvents, useMap, ZoomControl, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
 import RatingModal from './RatingModal';
+import Snackbar from './Snackbar';
+import { validatePathDistance, snapToRoad, MAX_ROAD_DISTANCE_KM } from './utils/roadUtils';
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
 import logo from './assets/roadrank-logo.svg';
@@ -226,6 +228,8 @@ function Map() {
   const [showDrawInstructions, setShowDrawInstructions] = useState(false);
   const [selectedRoad, setSelectedRoad] = useState(null);
   const [selectedRoadDetails, setSelectedRoadDetails] = useState({ ratings: [], summary: null, loading: false });
+  const [snapping, setSnapping] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'info' });
   const mapRef = useRef(null);
 
   const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || '', []);
@@ -253,9 +257,46 @@ function Map() {
 
   const getRoadDisplayRating = (road) => road?.rating_summary?.avg_fun_factor || road?.fun_factor || 0;
 
-  const handleDrawComplete = (path) => {
-    if (path.length > 1) {
+  const showSnackbar = useCallback((message, type = 'info') => {
+    setSnackbar({ open: true, message, type });
+  }, []);
+
+  const closeSnackbar = useCallback(() => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  }, []);
+
+  const handleDrawComplete = async (path) => {
+    if (path.length <= 1) return;
+
+    // Validate distance
+    const validation = validatePathDistance(path);
+    if (!validation.valid) {
+      showSnackbar(
+        `Road is too long (${validation.distance}km). Please draw a road shorter than ${MAX_ROAD_DISTANCE_KM}km.`,
+        'error'
+      );
+      return;
+    }
+
+    // Snap to road
+    setSnapping(true);
+    try {
+      const result = await snapToRoad(path);
+      if (result.success) {
+        setDrawnPath(result.snappedPath);
+        if (result.warning) {
+          showSnackbar(result.warning, 'warning');
+        }
+      } else {
+        setDrawnPath(path);
+        showSnackbar(result.error || 'Could not snap to road', 'warning');
+      }
+    } catch (error) {
+      console.error('Error snapping to road:', error);
       setDrawnPath(path);
+      showSnackbar('Road snapping failed. Using original path.', 'warning');
+    } finally {
+      setSnapping(false);
     }
   };
 
@@ -602,6 +643,23 @@ function Map() {
           />
         )}
       </MapContainer>
+
+      {snapping && (
+        <div className="snapping-overlay">
+          <div className="snapping-indicator">
+            <div className="snapping-spinner"></div>
+            <span>Snapping to road...</span>
+          </div>
+        </div>
+      )}
+
+      <Snackbar
+        message={snackbar.message}
+        type={snackbar.type}
+        open={snackbar.open}
+        onClose={closeSnackbar}
+        duration={6000}
+      />
     </>
   );
 }
