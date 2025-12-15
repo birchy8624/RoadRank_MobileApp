@@ -551,7 +551,7 @@ function Map() {
                   click: () => handleRoadSelect({ ...road, path }, positions),
                 }}
               >
-                <Tooltip className="road-tooltip" sticky interactive>
+                <Tooltip className="road-tooltip" interactive>
                   <div className="tooltip-content">
                     <span className="tooltip-road-name">{roadName}</span>
                     <button
