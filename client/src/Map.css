@@ -402,7 +402,6 @@
   padding: 14px 16px 24px 16px;
   box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.2);
   min-width: 180px;
-  overflow: visible;
 }
 
 .road-tooltip:before {
@@ -413,18 +412,6 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  position: relative;
-}
-
-/* Invisible bridge to keep tooltip open when moving cursor to it */
-.tooltip-content::after {
-  content: '';
-  position: absolute;
-  bottom: -35px;
-  left: -16px;
-  right: -16px;
-  height: 40px;
-  pointer-events: auto;
 }
 
 .tooltip-road-name {
