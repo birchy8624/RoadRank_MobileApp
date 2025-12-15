@@ -228,6 +228,7 @@ function Map() {
   const [showDrawInstructions, setShowDrawInstructions] = useState(false);
   const [selectedRoad, setSelectedRoad] = useState(null);
   const [selectedRoadDetails, setSelectedRoadDetails] = useState({ ratings: [], summary: null, loading: false });
+  const [hoveredRoadId, setHoveredRoadId] = useState(null);
   const [snapping, setSnapping] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'info' });
   const mapRef = useRef(null);
@@ -548,31 +549,39 @@ function Map() {
                   weight: 5,
                 }}
                 eventHandlers={{
-                  click: () => handleRoadSelect({ ...road, path }, positions),
+                  click: () => {
+                    setHoveredRoadId(null);
+                    handleRoadSelect({ ...road, path }, positions);
+                  },
+                  mouseover: () => setHoveredRoadId(road.id),
+                  mouseout: () => setHoveredRoadId(null),
                 }}
               >
-                <Tooltip className="road-tooltip" interactive direction="top" offset={[0, -5]}>
-                  <div className="tooltip-content">
-                    <span className="tooltip-road-name">{roadName}</span>
-                    <div className="tooltip-rating">
-                      <span>Avg rating:</span>
-                      <span className="tooltip-rating-value">
-                        {road.rating_summary?.avg_overall
-                          ? `${road.rating_summary.avg_overall.toFixed(1)}/5`
-                          : 'No ratings'}
-                      </span>
+                {hoveredRoadId === road.id && (
+                  <Tooltip className="road-tooltip" permanent direction="top" offset={[0, -5]}>
+                    <div className="tooltip-content">
+                      <span className="tooltip-road-name">{roadName}</span>
+                      <div className="tooltip-rating">
+                        <span>Avg rating:</span>
+                        <span className="tooltip-rating-value">
+                          {road.rating_summary?.avg_overall
+                            ? `${road.rating_summary.avg_overall.toFixed(1)}/5`
+                            : 'No ratings'}
+                        </span>
+                      </div>
+                      <button
+                        className="tooltip-review-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setHoveredRoadId(null);
+                          handleRoadSelect({ ...road, path }, positions);
+                        }}
+                      >
+                        See Reviews
+                      </button>
                     </div>
-                    <button
-                      className="tooltip-review-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRoadSelect({ ...road, path }, positions);
-                      }}
-                    >
-                      See Reviews
-                    </button>
-                  </div>
-                </Tooltip>
+                  </Tooltip>
+                )}
                 {selectedRoad && selectedRoad.id === road.id && (
                   <Popup
                     position={selectedRoad.middlePosition}

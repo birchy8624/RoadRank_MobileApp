@@ -402,31 +402,16 @@
   padding: 14px 16px 24px 16px;
   box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.2);
   min-width: 180px;
-  overflow: visible;
-  pointer-events: auto !important;
 }
 
 .road-tooltip:before {
   border-top-color: rgba(255, 255, 255, 0.98);
 }
 
-/* Invisible bridge extending from tooltip down to the road */
-.road-tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  height: 50px;
-  pointer-events: auto;
-}
-
 .tooltip-content {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  position: relative;
-  pointer-events: auto;
 }
 
 .tooltip-road-name {
