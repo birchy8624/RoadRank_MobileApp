@@ -550,6 +550,46 @@
   background: #e2e8f0;
 }
 
+/* Snapping overlay */
+.snapping-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 2600;
+  display: grid;
+  place-items: center;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.snapping-indicator {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.snapping-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .map-container {

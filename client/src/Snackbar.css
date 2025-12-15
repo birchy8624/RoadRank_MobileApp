@@ -1,0 +1,145 @@
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  animation: snackbarSlideUp 0.3s ease;
+  max-width: calc(100vw - 32px);
+}
+
+@keyframes snackbarSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.snackbar-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.snackbar-message {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.snackbar-close {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.snackbar-close:hover {
+  color: var(--text-primary);
+}
+
+/* Error variant */
+.snackbar-error {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(254, 226, 226, 0.98));
+}
+
+.snackbar-error .snackbar-icon {
+  background: #ef4444;
+  color: white;
+}
+
+.snackbar-error .snackbar-message {
+  color: #b91c1c;
+}
+
+/* Warning variant */
+.snackbar-warning {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(254, 243, 199, 0.98));
+}
+
+.snackbar-warning .snackbar-icon {
+  background: #f59e0b;
+  color: white;
+}
+
+.snackbar-warning .snackbar-message {
+  color: #92400e;
+}
+
+/* Success variant */
+.snackbar-success {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(209, 250, 229, 0.98));
+}
+
+.snackbar-success .snackbar-icon {
+  background: #10b981;
+  color: white;
+}
+
+.snackbar-success .snackbar-message {
+  color: #065f46;
+}
+
+/* Info variant */
+.snackbar-info {
+  border-color: rgba(14, 165, 233, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(224, 242, 254, 0.98));
+}
+
+.snackbar-info .snackbar-icon {
+  background: #0ea5e9;
+  color: white;
+}
+
+.snackbar-info .snackbar-message {
+  color: #0369a1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .snackbar {
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    transform: none;
+    max-width: none;
+  }
+
+  @keyframes snackbarSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
