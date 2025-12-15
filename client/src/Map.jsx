@@ -232,6 +232,26 @@ function Map() {
   const [snapping, setSnapping] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'info' });
   const mapRef = useRef(null);
+  const tooltipTimeoutRef = useRef(null);
+
+  const clearTooltipTimeout = () => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+  };
+
+  const hideTooltipWithDelay = () => {
+    clearTooltipTimeout();
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setHoveredRoadId(null);
+    }, 100);
+  };
+
+  const keepTooltipOpen = (roadId) => {
+    clearTooltipTimeout();
+    setHoveredRoadId(roadId);
+  };
 
   const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || '', []);
 
@@ -550,16 +570,21 @@ function Map() {
                 }}
                 eventHandlers={{
                   click: () => {
+                    clearTooltipTimeout();
                     setHoveredRoadId(null);
                     handleRoadSelect({ ...road, path }, positions);
                   },
-                  mouseover: () => setHoveredRoadId(road.id),
-                  mouseout: () => setHoveredRoadId(null),
+                  mouseover: () => keepTooltipOpen(road.id),
+                  mouseout: hideTooltipWithDelay,
                 }}
               >
                 {hoveredRoadId === road.id && (
                   <Tooltip className="road-tooltip" permanent direction="top" offset={[0, -5]}>
-                    <div className="tooltip-content">
+                    <div
+                      className="tooltip-content"
+                      onMouseEnter={() => keepTooltipOpen(road.id)}
+                      onMouseLeave={hideTooltipWithDelay}
+                    >
                       <span className="tooltip-road-name">{roadName}</span>
                       <div className="tooltip-rating">
                         <span>Avg rating:</span>
@@ -573,6 +598,7 @@ function Map() {
                         className="tooltip-review-btn"
                         onClick={(e) => {
                           e.stopPropagation();
+                          clearTooltipTimeout();
                           setHoveredRoadId(null);
                           handleRoadSelect({ ...road, path }, positions);
                         }}
