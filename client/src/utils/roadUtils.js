@@ -60,6 +60,73 @@ export function validatePathDistance(path) {
 }
 
 /**
+ * Calculate perpendicular distance from a point to a line segment
+ * Used by Ramer-Douglas-Peucker algorithm
+ * @param {[number, number]} point - The point [lat, lng]
+ * @param {[number, number]} lineStart - Start of line segment [lat, lng]
+ * @param {[number, number]} lineEnd - End of line segment [lat, lng]
+ * @returns {number} Distance in kilometers
+ */
+function perpendicularDistance(point, lineStart, lineEnd) {
+  const [lat, lng] = point;
+  const [lat1, lng1] = lineStart;
+  const [lat2, lng2] = lineEnd;
+
+  // If line start and end are the same point, return distance to that point
+  if (lat1 === lat2 && lng1 === lng2) {
+    return haversineDistance(lat, lng, lat1, lng1);
+  }
+
+  // Calculate the perpendicular distance using cross product method
+  // Convert to approximate Cartesian for small areas (good enough for simplification)
+  const dx = lng2 - lng1;
+  const dy = lat2 - lat1;
+  const lineLengthSquared = dx * dx + dy * dy;
+
+  // Project point onto line
+  const t = Math.max(0, Math.min(1, ((lng - lng1) * dx + (lat - lat1) * dy) / lineLengthSquared));
+  const projLng = lng1 + t * dx;
+  const projLat = lat1 + t * dy;
+
+  return haversineDistance(lat, lng, projLat, projLng);
+}
+
+/**
+ * Ramer-Douglas-Peucker algorithm for path simplification
+ * Preserves shape much better than even sampling, especially for curves and turns
+ * @param {Array<[number, number]>} path - Array of [lat, lng] points
+ * @param {number} epsilon - Tolerance in kilometers (points within this distance are removed)
+ * @returns {Array<[number, number]>}
+ */
+function rdpSimplify(path, epsilon) {
+  if (path.length <= 2) return path;
+
+  // Find the point with maximum distance from the line between first and last
+  let maxDistance = 0;
+  let maxIndex = 0;
+
+  for (let i = 1; i < path.length - 1; i++) {
+    const distance = perpendicularDistance(path[i], path[0], path[path.length - 1]);
+    if (distance > maxDistance) {
+      maxDistance = distance;
+      maxIndex = i;
+    }
+  }
+
+  // If max distance exceeds epsilon, recursively simplify
+  if (maxDistance > epsilon) {
+    const left = rdpSimplify(path.slice(0, maxIndex + 1), epsilon);
+    const right = rdpSimplify(path.slice(maxIndex), epsilon);
+
+    // Combine results (remove duplicate point at junction)
+    return left.slice(0, -1).concat(right);
+  }
+
+  // All points are within epsilon, return just endpoints
+  return [path[0], path[path.length - 1]];
+}
+
+/**
  * Simplify a path using distance-based filtering for better shape preservation
  * Only keeps points that are at least minDistance apart
  * @param {Array<[number, number]>} path - Array of [lat, lng] points
@@ -90,28 +157,61 @@ export function simplifyPathByDistance(path, minDistanceKm = 0.05) {
 }
 
 /**
- * Simplify a path by reducing the number of points while maintaining shape
+ * Adaptively simplify a path based on its total length
+ * Uses Ramer-Douglas-Peucker for shape preservation
  * @param {Array<[number, number]>} path - Array of [lat, lng] points
  * @param {number} maxPoints - Maximum number of points to keep
  * @returns {Array<[number, number]>}
  */
-export function simplifyPath(path, maxPoints = 25) {
-  if (path.length <= maxPoints) return path;
+export function simplifyPath(path, maxPoints = 100) {
+  if (path.length <= 2) return path;
 
-  // First apply distance-based filtering (50m minimum between points)
-  let simplified = simplifyPathByDistance(path, 0.05);
+  // Calculate total path distance to determine simplification strategy
+  const pathDistance = calculatePathDistance(path);
 
-  // If still too many points, sample evenly
+  // Adaptive parameters based on path length
+  let epsilon;      // RDP tolerance in km
+  let minDistance;  // Minimum distance between points in km
+
+  if (pathDistance <= 2) {
+    // Short paths (< 2km): high precision
+    epsilon = 0.005;     // 5m tolerance
+    minDistance = 0.02;  // 20m minimum between points
+  } else if (pathDistance <= 5) {
+    // Medium paths (2-5km): moderate precision
+    epsilon = 0.01;      // 10m tolerance
+    minDistance = 0.03;  // 30m minimum between points
+  } else if (pathDistance <= 10) {
+    // Long paths (5-10km): balanced precision
+    epsilon = 0.02;      // 20m tolerance
+    minDistance = 0.05;  // 50m minimum between points
+  } else {
+    // Very long paths (10-20km): optimize for API limits
+    epsilon = 0.03;      // 30m tolerance
+    minDistance = 0.08;  // 80m minimum between points
+  }
+
+  // Step 1: Apply distance-based filtering first (fast, removes clustered points)
+  let simplified = simplifyPathByDistance(path, minDistance);
+
+  // Step 2: Apply RDP algorithm for shape-preserving simplification
+  if (simplified.length > maxPoints) {
+    // Iteratively increase epsilon until we're under maxPoints
+    let currentEpsilon = epsilon;
+    while (simplified.length > maxPoints && currentEpsilon < 0.5) {
+      simplified = rdpSimplify(simplified, currentEpsilon);
+      currentEpsilon *= 1.5;  // Increase tolerance by 50% each iteration
+    }
+  }
+
+  // Step 3: If still too many points, fall back to even sampling
   if (simplified.length > maxPoints) {
     const step = Math.ceil(simplified.length / maxPoints);
-    const sampled = [];
-    for (let i = 0; i < simplified.length; i += step) {
+    const sampled = [simplified[0]];
+    for (let i = step; i < simplified.length - 1; i += step) {
       sampled.push(simplified[i]);
     }
-    // Always include the last point
-    if (sampled[sampled.length - 1] !== simplified[simplified.length - 1]) {
-      sampled.push(simplified[simplified.length - 1]);
-    }
+    sampled.push(simplified[simplified.length - 1]);
     simplified = sampled;
   }
 
@@ -163,7 +263,7 @@ function decodePolyline(encoded, precision = 5) {
 
 /**
  * Snap a drawn path to the nearest roads using OSRM Match API
- * Optimized for speed with reduced points and polyline encoding
+ * Optimized for roads up to 20km with adaptive simplification
  * @param {Array<[number, number]>} path - Array of [lat, lng] points
  * @returns {Promise<{ success: boolean, snappedPath?: Array<[number, number]>, error?: string }>}
  */
@@ -173,23 +273,31 @@ export async function snapToRoad(path) {
   }
 
   try {
-    // Aggressively simplify path for faster API response (max 25 points)
-    const simplifiedPath = simplifyPath(path, 25);
+    // Calculate path distance to determine optimal settings
+    const pathDistance = calculatePathDistance(path);
+
+    // Adaptive max points based on path length (more points for longer paths)
+    const maxPoints = pathDistance > 10 ? 100 : pathDistance > 5 ? 80 : 50;
+
+    // Use smart simplification with RDP algorithm for shape preservation
+    const simplifiedPath = simplifyPath(path, maxPoints);
 
     // OSRM expects coordinates as lng,lat (opposite of Leaflet's lat,lng)
     const coordinates = simplifiedPath
       .map(([lat, lng]) => `${lng},${lat}`)
       .join(';');
 
-    // Use larger radius (50m) for faster matching with fewer retries
-    const radiuses = simplifiedPath.map(() => 50).join(';');
+    // Adaptive radius: larger for longer paths to handle GPS inaccuracies
+    const radius = pathDistance > 10 ? 75 : 50;
+    const radiuses = simplifiedPath.map(() => radius).join(';');
 
-    // Use polyline encoding (faster) and simplified overview
-    const url = `https://router.project-osrm.org/match/v1/driving/${coordinates}?overview=simplified&geometries=polyline&radiuses=${radiuses}&gaps=ignore`;
+    // Use full overview for longer paths to get accurate snapped geometry
+    const overview = pathDistance > 5 ? 'full' : 'simplified';
+    const url = `https://router.project-osrm.org/match/v1/driving/${coordinates}?overview=${overview}&geometries=polyline&radiuses=${radiuses}&gaps=ignore`;
 
-    // Add timeout for faster failure
+    // Add timeout (30 seconds for longer roads up to 20km)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     const response = await fetch(url, { signal: controller.signal });
     clearTimeout(timeoutId);
