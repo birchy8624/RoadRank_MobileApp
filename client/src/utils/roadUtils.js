@@ -2,7 +2,7 @@
  * Utility functions for road drawing: distance calculation and road snapping
  */
 
-const MAX_ROAD_DISTANCE_KM = 5;
+const MAX_ROAD_DISTANCE_KM = 20;
 
 /**
  * Calculate the distance between two points using the Haversine formula
