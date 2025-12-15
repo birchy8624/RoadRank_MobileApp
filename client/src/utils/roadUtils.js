@@ -60,34 +60,110 @@ export function validatePathDistance(path) {
 }
 
 /**
+ * Simplify a path using distance-based filtering for better shape preservation
+ * Only keeps points that are at least minDistance apart
+ * @param {Array<[number, number]>} path - Array of [lat, lng] points
+ * @param {number} minDistanceKm - Minimum distance between points in km
+ * @returns {Array<[number, number]>}
+ */
+export function simplifyPathByDistance(path, minDistanceKm = 0.05) {
+  if (path.length <= 2) return path;
+
+  const simplified = [path[0]];
+  let lastKept = path[0];
+
+  for (let i = 1; i < path.length - 1; i++) {
+    const [lat1, lng1] = lastKept;
+    const [lat2, lng2] = path[i];
+    const dist = haversineDistance(lat1, lng1, lat2, lng2);
+
+    if (dist >= minDistanceKm) {
+      simplified.push(path[i]);
+      lastKept = path[i];
+    }
+  }
+
+  // Always include the last point
+  simplified.push(path[path.length - 1]);
+
+  return simplified;
+}
+
+/**
  * Simplify a path by reducing the number of points while maintaining shape
- * This helps reduce API calls and improves snapping performance
- * Uses the Ramer-Douglas-Peucker algorithm concept (simplified version)
  * @param {Array<[number, number]>} path - Array of [lat, lng] points
  * @param {number} maxPoints - Maximum number of points to keep
  * @returns {Array<[number, number]>}
  */
-export function simplifyPath(path, maxPoints = 100) {
+export function simplifyPath(path, maxPoints = 25) {
   if (path.length <= maxPoints) return path;
 
-  // Keep every nth point to reduce to maxPoints
-  const step = Math.ceil(path.length / maxPoints);
-  const simplified = [];
+  // First apply distance-based filtering (50m minimum between points)
+  let simplified = simplifyPathByDistance(path, 0.05);
 
-  for (let i = 0; i < path.length; i += step) {
-    simplified.push(path[i]);
-  }
-
-  // Always include the last point
-  if (simplified[simplified.length - 1] !== path[path.length - 1]) {
-    simplified.push(path[path.length - 1]);
+  // If still too many points, sample evenly
+  if (simplified.length > maxPoints) {
+    const step = Math.ceil(simplified.length / maxPoints);
+    const sampled = [];
+    for (let i = 0; i < simplified.length; i += step) {
+      sampled.push(simplified[i]);
+    }
+    // Always include the last point
+    if (sampled[sampled.length - 1] !== simplified[simplified.length - 1]) {
+      sampled.push(simplified[simplified.length - 1]);
+    }
+    simplified = sampled;
   }
 
   return simplified;
 }
 
 /**
+ * Decode a polyline encoded string to coordinates
+ * @param {string} encoded - Polyline encoded string
+ * @param {number} precision - Precision (5 for OSRM, 6 for Google)
+ * @returns {Array<[number, number]>} Array of [lat, lng] points
+ */
+function decodePolyline(encoded, precision = 5) {
+  const factor = Math.pow(10, precision);
+  const coordinates = [];
+  let lat = 0;
+  let lng = 0;
+  let index = 0;
+
+  while (index < encoded.length) {
+    let shift = 0;
+    let result = 0;
+    let byte;
+
+    do {
+      byte = encoded.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20);
+
+    lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+
+    shift = 0;
+    result = 0;
+
+    do {
+      byte = encoded.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20);
+
+    lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+
+    coordinates.push([lat / factor, lng / factor]);
+  }
+
+  return coordinates;
+}
+
+/**
  * Snap a drawn path to the nearest roads using OSRM Match API
+ * Optimized for speed with reduced points and polyline encoding
  * @param {Array<[number, number]>} path - Array of [lat, lng] points
  * @returns {Promise<{ success: boolean, snappedPath?: Array<[number, number]>, error?: string }>}
  */
@@ -97,21 +173,26 @@ export async function snapToRoad(path) {
   }
 
   try {
-    // Simplify path to reduce API call size (OSRM has limits)
-    const simplifiedPath = simplifyPath(path, 100);
+    // Aggressively simplify path for faster API response (max 25 points)
+    const simplifiedPath = simplifyPath(path, 25);
 
     // OSRM expects coordinates as lng,lat (opposite of Leaflet's lat,lng)
     const coordinates = simplifiedPath
       .map(([lat, lng]) => `${lng},${lat}`)
       .join(';');
 
-    // Use OSRM Match API for map matching (snapping to roads)
-    // radiuses parameter sets the search radius for each point (in meters)
-    const radiuses = simplifiedPath.map(() => 25).join(';');
+    // Use larger radius (50m) for faster matching with fewer retries
+    const radiuses = simplifiedPath.map(() => 50).join(';');
 
-    const url = `https://router.project-osrm.org/match/v1/driving/${coordinates}?overview=full&geometries=geojson&radiuses=${radiuses}`;
+    // Use polyline encoding (faster) and simplified overview
+    const url = `https://router.project-osrm.org/match/v1/driving/${coordinates}?overview=simplified&geometries=polyline&radiuses=${radiuses}&gaps=ignore`;
 
-    const response = await fetch(url);
+    // Add timeout for faster failure
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`OSRM API error: ${response.status}`);
@@ -120,8 +201,6 @@ export async function snapToRoad(path) {
     const data = await response.json();
 
     if (data.code !== 'Ok' || !data.matchings || data.matchings.length === 0) {
-      // If snapping fails, return the original path
-      // This can happen if the drawn path is not near any roads
       return {
         success: true,
         snappedPath: path,
@@ -129,19 +208,23 @@ export async function snapToRoad(path) {
       };
     }
 
-    // Extract the snapped coordinates from the response
-    // OSRM returns coordinates as [lng, lat], convert back to [lat, lng]
-    const snappedCoordinates = data.matchings[0].geometry.coordinates.map(
-      ([lng, lat]) => [lat, lng]
-    );
+    // Decode polyline to coordinates
+    const snappedCoordinates = decodePolyline(data.matchings[0].geometry);
 
     return {
       success: true,
       snappedPath: snappedCoordinates
     };
   } catch (error) {
+    if (error.name === 'AbortError') {
+      console.warn('Road snapping timed out');
+      return {
+        success: true,
+        snappedPath: path,
+        warning: 'Road snapping timed out. Using original path.'
+      };
+    }
     console.error('Road snapping error:', error);
-    // Return original path if snapping fails
     return {
       success: true,
       snappedPath: path,
