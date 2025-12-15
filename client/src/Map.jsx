@@ -551,8 +551,19 @@ function Map() {
                   click: () => handleRoadSelect({ ...road, path }, positions),
                 }}
               >
-                <Tooltip className="road-tooltip" sticky>
-                  {roadName}
+                <Tooltip className="road-tooltip" sticky interactive>
+                  <div className="tooltip-content">
+                    <span className="tooltip-road-name">{roadName}</span>
+                    <button
+                      className="tooltip-review-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRoadSelect({ ...road, path }, positions);
+                      }}
+                    >
+                      See Reviews
+                    </button>
+                  </div>
                 </Tooltip>
                 {selectedRoad && selectedRoad.id === road.id && (
                   <Popup

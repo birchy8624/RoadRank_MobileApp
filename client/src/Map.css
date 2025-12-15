@@ -408,6 +408,39 @@
   border-top-color: rgba(17, 24, 39, 0.92);
 }
 
+.tooltip-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tooltip-road-name {
+  font-weight: 700;
+}
+
+.tooltip-review-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.tooltip-review-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.4);
+}
+
+.tooltip-review-btn:active {
+  transform: translateY(0);
+}
+
 .muted {
   color: var(--text-tertiary);
   margin: 0;
