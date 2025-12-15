@@ -579,7 +579,13 @@ function Map() {
                 }}
               >
                 {hoveredRoadId === road.id && (
-                  <Tooltip className="road-tooltip" permanent direction="top" offset={[0, -5]}>
+                  <Tooltip
+                    className="road-tooltip"
+                    permanent
+                    direction="top"
+                    offset={[0, -5]}
+                    interactive
+                  >
                     <div
                       className="tooltip-content"
                       onMouseEnter={() => keepTooltipOpen(road.id)}
