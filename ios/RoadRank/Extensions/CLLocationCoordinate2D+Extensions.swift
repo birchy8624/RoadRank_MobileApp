@@ -32,10 +32,10 @@ extension Array where Element == CLLocationCoordinate2D {
         var maxLng = self[0].longitude
 
         for coord in self {
-            minLat = min(minLat, coord.latitude)
-            maxLat = max(maxLat, coord.latitude)
-            minLng = min(minLng, coord.longitude)
-            maxLng = max(maxLng, coord.longitude)
+            minLat = Swift.min(minLat, coord.latitude)
+            maxLat = Swift.max(maxLat, coord.latitude)
+            minLng = Swift.min(minLng, coord.longitude)
+            maxLng = Swift.max(maxLng, coord.longitude)
         }
 
         let center = CLLocationCoordinate2D(
