@@ -93,18 +93,27 @@ struct OSRMTracepoint: Codable {
 
 // MARK: - MKLocalSearch Extension for Fallback
 struct LocationSearchResult: Identifiable {
-    let id = UUID()
+    let id: UUID
     let title: String
     let subtitle: String
     let coordinate: CLLocationCoordinate2D
 
+    init(title: String, subtitle: String, coordinate: CLLocationCoordinate2D) {
+        self.id = UUID()
+        self.title = title
+        self.subtitle = subtitle
+        self.coordinate = coordinate
+    }
+
     init(mapItem: MKMapItem) {
+        self.id = UUID()
         self.title = mapItem.name ?? "Unknown Location"
         self.subtitle = mapItem.placemark.formattedAddress ?? ""
         self.coordinate = mapItem.placemark.coordinate
     }
 
     init(nominatimResult: NominatimResult) {
+        self.id = UUID()
         self.title = nominatimResult.shortName
         self.subtitle = nominatimResult.locationDescription
         self.coordinate = nominatimResult.coordinate

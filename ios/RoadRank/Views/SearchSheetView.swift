@@ -242,24 +242,6 @@ struct SearchResultRow: View {
     }
 }
 
-// MARK: - Extension for custom initializer
-extension LocationSearchResult {
-    init(title: String, subtitle: String, coordinate: CLLocationCoordinate2D) {
-        self.id = UUID()
-        self.title = title
-        self.subtitle = subtitle
-        self.coordinate = coordinate
-    }
-
-    // Required private initializer workaround
-    private init(id: UUID, title: String, subtitle: String, coordinate: CLLocationCoordinate2D) {
-        self.id = id
-        self.title = title
-        self.subtitle = subtitle
-        self.coordinate = coordinate
-    }
-}
-
 #Preview {
     SearchSheetView(searchViewModel: SearchViewModel()) { _ in }
 }

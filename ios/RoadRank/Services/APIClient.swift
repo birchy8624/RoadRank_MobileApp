@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - API Configuration
 enum APIConfig {
