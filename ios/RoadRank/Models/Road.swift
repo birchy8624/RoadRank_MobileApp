@@ -1,5 +1,6 @@
 import Foundation
 import MapKit
+import SwiftUI
 
 // MARK: - Coordinate
 struct Coordinate: Codable, Equatable, Hashable, Identifiable {
@@ -270,5 +271,3 @@ struct NewRatingInput {
         ]
     }
 }
-
-import SwiftUI

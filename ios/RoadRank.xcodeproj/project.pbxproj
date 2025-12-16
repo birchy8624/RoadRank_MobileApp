@@ -7,33 +7,55 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E91000002B0000000000000A /* RoadRankApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B0000000000000A /* RoadRankApp.swift */; };
-		E91000002B0000000000000B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B0000000000000B /* ContentView.swift */; };
-		E91000002B0000000000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E90000002B0000000000000C /* Assets.xcassets */; };
-		E91000002B0000000000000D /* Models in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B0000000000000D /* Models */; };
-		E91000002B0000000000000E /* Views in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B0000000000000E /* Views */; };
-		E91000002B0000000000000F /* ViewModels in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B0000000000000F /* ViewModels */; };
-		E91000002B00000000000010 /* Services in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B00000000000010 /* Services */; };
-		E91000002B00000000000011 /* Components in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B00000000000011 /* Components */; };
-		E91000002B00000000000012 /* Extensions in Sources */ = {isa = PBXBuildFile; fileRef = E90000002B00000000000012 /* Extensions */; };
+		A10000000000000000000001 /* RoadRankApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* RoadRankApp.swift */; };
+		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* ContentView.swift */; };
+		A10000000000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* Assets.xcassets */; };
+		A10000000000000000000004 /* Road.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* Road.swift */; };
+		A10000000000000000000005 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* SearchResult.swift */; };
+		A10000000000000000000006 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* APIClient.swift */; };
+		A10000000000000000000007 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* LocationManager.swift */; };
+		A10000000000000000000008 /* RoadSnappingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* RoadSnappingService.swift */; };
+		A10000000000000000000009 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* SearchService.swift */; };
+		A1000000000000000000000A /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000A /* HapticManager.swift */; };
+		A1000000000000000000000B /* MapContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* MapContainerView.swift */; };
+		A1000000000000000000000C /* MapViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* MapViewRepresentable.swift */; };
+		A1000000000000000000000D /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000D /* DiscoverView.swift */; };
+		A1000000000000000000000E /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* ProfileView.swift */; };
+		A1000000000000000000000F /* RatingSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* RatingSheetView.swift */; };
+		A10000000000000000000010 /* SearchSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* SearchSheetView.swift */; };
+		A10000000000000000000011 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* LoadingView.swift */; };
+		A10000000000000000000012 /* RatingBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* RatingBadge.swift */; };
+		A10000000000000000000013 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* Color+Extensions.swift */; };
+		A10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E90000002B0000000000000A /* RoadRankApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadRankApp.swift; sourceTree = "<group>"; };
-		E90000002B0000000000000B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		E90000002B0000000000000C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E90000002B0000000000000D /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Models; sourceTree = "<group>"; };
-		E90000002B0000000000000E /* Views */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Views; sourceTree = "<group>"; };
-		E90000002B0000000000000F /* ViewModels */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ViewModels; sourceTree = "<group>"; };
-		E90000002B00000000000010 /* Services */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Services; sourceTree = "<group>"; };
-		E90000002B00000000000011 /* Components */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Components; sourceTree = "<group>"; };
-		E90000002B00000000000012 /* Extensions */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Extensions; sourceTree = "<group>"; };
-		E90000002B00000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E90000002B00000000000001 /* RoadRank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoadRank.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000001 /* RoadRankApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadRankApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000000000000000000004 /* Road.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Road.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* RoadSnappingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadSnappingService.swift; sourceTree = "<group>"; };
+		B10000000000000000000009 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
+		B1000000000000000000000A /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		B1000000000000000000000B /* MapContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapContainerView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000C /* MapViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewRepresentable.swift; sourceTree = "<group>"; };
+		B1000000000000000000000D /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000E /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000F /* RatingSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingSheetView.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* SearchSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSheetView.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* RatingBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingBadge.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		B10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extensions.swift"; sourceTree = "<group>"; };
+		B10000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C10000000000000000000001 /* RoadRank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoadRank.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E92000002B00000000000001 /* Frameworks */ = {
+		D10000000000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -43,49 +65,100 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E93000002B00000000000001 = {
+		E10000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				E93000002B00000000000002 /* RoadRank */,
-				E93000002B00000000000003 /* Products */,
+				E10000000000000000000002 /* RoadRank */,
+				E10000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		E93000002B00000000000002 /* RoadRank */ = {
+		E10000000000000000000002 /* RoadRank */ = {
 			isa = PBXGroup;
 			children = (
-				E90000002B0000000000000A /* RoadRankApp.swift */,
-				E90000002B0000000000000B /* ContentView.swift */,
-				E90000002B0000000000000D /* Models */,
-				E90000002B0000000000000E /* Views */,
-				E90000002B0000000000000F /* ViewModels */,
-				E90000002B00000000000010 /* Services */,
-				E90000002B00000000000011 /* Components */,
-				E90000002B00000000000012 /* Extensions */,
-				E90000002B0000000000000C /* Assets.xcassets */,
-				E90000002B00000000000013 /* Info.plist */,
+				B10000000000000000000001 /* RoadRankApp.swift */,
+				B10000000000000000000002 /* ContentView.swift */,
+				E10000000000000000000004 /* Models */,
+				E10000000000000000000005 /* Views */,
+				E10000000000000000000006 /* Services */,
+				E10000000000000000000007 /* Components */,
+				E10000000000000000000008 /* Extensions */,
+				B10000000000000000000003 /* Assets.xcassets */,
+				B10000000000000000000015 /* Info.plist */,
 			);
 			path = RoadRank;
 			sourceTree = "<group>";
 		};
-		E93000002B00000000000003 /* Products */ = {
+		E10000000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E90000002B00000000000001 /* RoadRank.app */,
+				C10000000000000000000001 /* RoadRank.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* Road.swift */,
+				B10000000000000000000005 /* SearchResult.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000B /* MapContainerView.swift */,
+				B1000000000000000000000C /* MapViewRepresentable.swift */,
+				B1000000000000000000000D /* DiscoverView.swift */,
+				B1000000000000000000000E /* ProfileView.swift */,
+				B1000000000000000000000F /* RatingSheetView.swift */,
+				B10000000000000000000010 /* SearchSheetView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000006 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000006 /* APIClient.swift */,
+				B10000000000000000000007 /* LocationManager.swift */,
+				B10000000000000000000008 /* RoadSnappingService.swift */,
+				B10000000000000000000009 /* SearchService.swift */,
+				B1000000000000000000000A /* HapticManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000007 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000011 /* LoadingView.swift */,
+				B10000000000000000000012 /* RatingBadge.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000008 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000013 /* Color+Extensions.swift */,
+				B10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E94000002B00000000000001 /* RoadRank */ = {
+		F10000000000000000000001 /* RoadRank */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E95000002B00000000000001 /* Build configuration list for PBXNativeTarget "RoadRank" */;
+			buildConfigurationList = F10000000000000000000002 /* Build configuration list for PBXNativeTarget "RoadRank" */;
 			buildPhases = (
-				E94000002B00000000000002 /* Sources */,
-				E92000002B00000000000001 /* Frameworks */,
-				E94000002B00000000000003 /* Resources */,
+				F10000000000000000000003 /* Sources */,
+				D10000000000000000000001 /* Frameworks */,
+				F10000000000000000000004 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -93,25 +166,25 @@
 			);
 			name = RoadRank;
 			productName = RoadRank;
-			productReference = E90000002B00000000000001 /* RoadRank.app */;
+			productReference = C10000000000000000000001 /* RoadRank.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		E96000002B00000000000001 /* Project object */ = {
+		F20000000000000000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					E94000002B00000000000001 = {
+					F10000000000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = E96000002B00000000000002 /* Build configuration list for PBXProject "RoadRank" */;
+			buildConfigurationList = F20000000000000000000002 /* Build configuration list for PBXProject "RoadRank" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -119,41 +192,58 @@
 				en,
 				Base,
 			);
-			mainGroup = E93000002B00000000000001;
-			productRefGroup = E93000002B00000000000003 /* Products */;
+			mainGroup = E10000000000000000000001;
+			productRefGroup = E10000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E94000002B00000000000001 /* RoadRank */,
+				F10000000000000000000001 /* RoadRank */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E94000002B00000000000003 /* Resources */ = {
+		F10000000000000000000004 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E91000002B0000000000000C /* Assets.xcassets in Resources */,
+				A10000000000000000000003 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E94000002B00000000000002 /* Sources */ = {
+		F10000000000000000000003 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E91000002B0000000000000A /* RoadRankApp.swift in Sources */,
-				E91000002B0000000000000B /* ContentView.swift in Sources */,
+				A10000000000000000000001 /* RoadRankApp.swift in Sources */,
+				A10000000000000000000002 /* ContentView.swift in Sources */,
+				A10000000000000000000004 /* Road.swift in Sources */,
+				A10000000000000000000005 /* SearchResult.swift in Sources */,
+				A10000000000000000000006 /* APIClient.swift in Sources */,
+				A10000000000000000000007 /* LocationManager.swift in Sources */,
+				A10000000000000000000008 /* RoadSnappingService.swift in Sources */,
+				A10000000000000000000009 /* SearchService.swift in Sources */,
+				A1000000000000000000000A /* HapticManager.swift in Sources */,
+				A1000000000000000000000B /* MapContainerView.swift in Sources */,
+				A1000000000000000000000C /* MapViewRepresentable.swift in Sources */,
+				A1000000000000000000000D /* DiscoverView.swift in Sources */,
+				A1000000000000000000000E /* ProfileView.swift in Sources */,
+				A1000000000000000000000F /* RatingSheetView.swift in Sources */,
+				A10000000000000000000010 /* SearchSheetView.swift in Sources */,
+				A10000000000000000000011 /* LoadingView.swift in Sources */,
+				A10000000000000000000012 /* RatingBadge.swift in Sources */,
+				A10000000000000000000013 /* Color+Extensions.swift in Sources */,
+				A10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		E97000002B00000000000001 /* Debug */ = {
+		F30000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -216,7 +306,7 @@
 			};
 			name = Debug;
 		};
-		E97000002B00000000000002 /* Release */ = {
+		F30000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -272,21 +362,19 @@
 			};
 			name = Release;
 		};
-		E98000002B00000000000001 /* Debug */ = {
+		F40000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"RoadRank/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = RoadRank/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RoadRank;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "RoadRank uses your location to show nearby roads, track your driving routes, and help you discover new roads to rate.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "RoadRank uses your location to show nearby roads and help you discover new roads to rate.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -307,21 +395,19 @@
 			};
 			name = Debug;
 		};
-		E98000002B00000000000002 /* Release */ = {
+		F40000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"RoadRank/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = RoadRank/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RoadRank;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "RoadRank uses your location to show nearby roads, track your driving routes, and help you discover new roads to rate.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "RoadRank uses your location to show nearby roads and help you discover new roads to rate.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -345,25 +431,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E95000002B00000000000001 /* Build configuration list for PBXNativeTarget "RoadRank" */ = {
+		F10000000000000000000002 /* Build configuration list for PBXNativeTarget "RoadRank" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E98000002B00000000000001 /* Debug */,
-				E98000002B00000000000002 /* Release */,
+				F40000000000000000000001 /* Debug */,
+				F40000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E96000002B00000000000002 /* Build configuration list for PBXProject "RoadRank" */ = {
+		F20000000000000000000002 /* Build configuration list for PBXProject "RoadRank" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E97000002B00000000000001 /* Debug */,
-				E97000002B00000000000002 /* Release */,
+				F30000000000000000000001 /* Debug */,
+				F30000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = E96000002B00000000000001 /* Project object */;
+	rootObject = F20000000000000000000001 /* Project object */;
 }
