@@ -20,6 +20,16 @@ class LocationManager: NSObject, ObservableObject {
     @Published var trackedRoute: [CLLocation] = []
     @Published var isRecordingRoute: Bool = false
 
+    // Ride tracking state
+    @Published var currentRide: Ride?
+    @Published var rideState: RideState = .idle
+    @Published var currentSpeed: Double = 0 // km/h
+    @Published var elapsedTime: TimeInterval = 0
+    @Published var rideDistance: Double = 0 // meters
+
+    private var rideTimer: Timer?
+    private var rideStartTime: Date?
+
     override init() {
         super.init()
         manager.delegate = self
@@ -97,6 +107,121 @@ class LocationManager: NSObject, ObservableObject {
         manager.allowsBackgroundLocationUpdates = false
         trackedRoute = []
     }
+
+    // MARK: - Ride Tracking
+
+    func startRide() {
+        guard rideState == .idle else { return }
+
+        rideStartTime = Date()
+        currentRide = Ride(startTime: rideStartTime!)
+        rideState = .tracking
+        currentSpeed = 0
+        elapsedTime = 0
+        rideDistance = 0
+
+        manager.allowsBackgroundLocationUpdates = true
+        startUpdatingLocation()
+
+        // Start timer for elapsed time
+        rideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self = self, let startTime = self.rideStartTime else { return }
+                self.elapsedTime = Date().timeIntervalSince(startTime)
+            }
+        }
+
+        HapticManager.shared.success()
+    }
+
+    func pauseRide() {
+        guard rideState == .tracking else { return }
+        rideState = .paused
+        rideTimer?.invalidate()
+        rideTimer = nil
+        HapticManager.shared.impact(.medium)
+    }
+
+    func resumeRide() {
+        guard rideState == .paused else { return }
+        rideState = .tracking
+
+        // Resume timer
+        rideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self = self, let startTime = self.rideStartTime else { return }
+                self.elapsedTime = Date().timeIntervalSince(startTime)
+            }
+        }
+
+        HapticManager.shared.impact(.medium)
+    }
+
+    func finishRide() -> Ride? {
+        guard rideState == .tracking || rideState == .paused,
+              var ride = currentRide else { return nil }
+
+        rideTimer?.invalidate()
+        rideTimer = nil
+        ride.endTime = Date()
+        manager.allowsBackgroundLocationUpdates = false
+
+        let finishedRide = ride
+        rideState = .finished(finishedRide)
+
+        HapticManager.shared.success()
+        return finishedRide
+    }
+
+    func cancelRide() {
+        rideTimer?.invalidate()
+        rideTimer = nil
+        rideStartTime = nil
+        currentRide = nil
+        rideState = .idle
+        currentSpeed = 0
+        elapsedTime = 0
+        rideDistance = 0
+        manager.allowsBackgroundLocationUpdates = false
+
+        HapticManager.shared.warning()
+    }
+
+    func resetRide() {
+        rideTimer?.invalidate()
+        rideTimer = nil
+        rideStartTime = nil
+        currentRide = nil
+        rideState = .idle
+        currentSpeed = 0
+        elapsedTime = 0
+        rideDistance = 0
+    }
+
+    var formattedElapsedTime: String {
+        let hours = Int(elapsedTime) / 3600
+        let minutes = (Int(elapsedTime) % 3600) / 60
+        let seconds = Int(elapsedTime) % 60
+
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
+    }
+
+    var formattedCurrentSpeed: String {
+        String(format: "%.1f", currentSpeed)
+    }
+
+    var formattedRideDistance: String {
+        let km = rideDistance / 1000.0
+        if km < 1 {
+            return String(format: "%.0f m", rideDistance)
+        } else {
+            return String(format: "%.2f km", km)
+        }
+    }
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -121,6 +246,35 @@ extension LocationManager: CLLocationManagerDelegate {
                     }
                 } else if newLocation.horizontalAccuracy <= 50 {
                     self.trackedRoute.append(newLocation)
+                }
+            }
+
+            // Record ride if tracking
+            if self.rideState == .tracking {
+                // Update current speed
+                if newLocation.speed >= 0 {
+                    self.currentSpeed = newLocation.speed * 3.6 // Convert m/s to km/h
+                }
+
+                // Add point to ride if accuracy is good enough
+                if newLocation.horizontalAccuracy <= 50 {
+                    let ridePoint = RidePoint(from: newLocation)
+
+                    // Check minimum distance from last point (10m for smoother tracking)
+                    if let lastPoint = self.currentRide?.path.last {
+                        let lastLocation = CLLocation(
+                            latitude: lastPoint.coordinate.lat,
+                            longitude: lastPoint.coordinate.lng
+                        )
+                        let distance = newLocation.distance(from: lastLocation)
+
+                        if distance >= 10 {
+                            self.currentRide?.path.append(ridePoint)
+                            self.rideDistance += distance
+                        }
+                    } else {
+                        self.currentRide?.path.append(ridePoint)
+                    }
                 }
             }
         }

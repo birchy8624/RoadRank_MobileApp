@@ -57,6 +57,7 @@ struct RatingSheetView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 40)
             }
+            .background(Theme.background)
             .navigationTitle(isNewRoad ? "New Road" : "Add Rating")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -65,8 +66,11 @@ struct RatingSheetView: View {
                         dismiss()
                         appState.clearDrawing()
                     }
+                    .foregroundStyle(Theme.textSecondary)
                 }
             }
+            .toolbarBackground(Theme.backgroundSecondary, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .alert("Error", isPresented: $showError) {
                 Button("OK") { }
             } message: {
@@ -77,39 +81,60 @@ struct RatingSheetView: View {
 
     // MARK: - Header Section
     private var headerSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             if isNewRoad {
                 // Mini map preview
                 if !drawnPath.isEmpty {
                     MiniMapView(coordinates: drawnPath.map(\.clLocationCoordinate2D))
-                        .frame(height: 150)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .frame(height: 160)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Theme.cardBorder, lineWidth: 1)
+                        )
                 }
 
-                HStack(spacing: 16) {
-                    Label(String(format: "%.2f km", drawnPath.totalDistanceInKm()), systemImage: "road.lanes")
-                    Label("\(drawnPath.count) points", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                HStack(spacing: 20) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "road.lanes")
+                            .foregroundStyle(Theme.primary)
+                        Text(String(format: "%.2f km", drawnPath.totalDistanceInKm()))
+                            .fontWeight(.semibold)
+                    }
+                    HStack(spacing: 6) {
+                        Image(systemName: "point.topleft.down.to.point.bottomright.curvepath")
+                            .foregroundStyle(Theme.secondary)
+                        Text("\(drawnPath.count) points")
+                            .fontWeight(.semibold)
+                    }
                 }
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
             } else if let road = road {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
                     Text(road.displayName)
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundStyle(Theme.textPrimary)
 
                     if road.overallRating > 0 {
-                        HStack(spacing: 8) {
+                        HStack(spacing: 12) {
                             Text(String(format: "%.1f", road.overallRating))
                                 .font(.headline)
                                 .foregroundStyle(road.ratingColor.color)
 
-                            RatingDotsView(rating: Int(road.overallRating.rounded()), color: .yellow)
+                            HStack(spacing: 3) {
+                                ForEach(0..<5) { index in
+                                    Image(systemName: index < Int(road.overallRating.rounded()) ? "star.fill" : "star")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(index < Int(road.overallRating.rounded()) ? Theme.warning : Theme.surface)
+                                }
+                            }
 
                             if let count = road.ratingCount {
                                 Text("(\(count) ratings)")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.textMuted)
                             }
                         }
                     }
@@ -121,107 +146,129 @@ struct RatingSheetView: View {
 
     // MARK: - Road Name Section
     private var roadNameSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Road Name")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "textformat")
+                    .foregroundStyle(Theme.primary)
+                Text("Road Name")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+            }
 
             TextField("Enter road name...", text: $roadName)
-                .textFieldStyle(.roundedBorder)
-                .font(.body)
+                .padding(16)
+                .background(Theme.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .foregroundStyle(Theme.textPrimary)
 
             Text("Give your road a memorable name")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textMuted)
         }
-        .padding(16)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Rating Section
     private var ratingSection: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Ratings")
-                .font(.headline)
+            HStack(spacing: 8) {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(Theme.warning)
+                Text("Ratings")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+            }
 
-            RatingSliderRow(
+            BrandedRatingSliderRow(
                 category: .twistiness,
                 value: $twistiness
             )
 
-            RatingSliderRow(
+            BrandedRatingSliderRow(
                 category: .surfaceCondition,
                 value: $surfaceCondition
             )
 
-            RatingSliderRow(
+            BrandedRatingSliderRow(
                 category: .funFactor,
                 value: $funFactor
             )
 
-            RatingSliderRow(
+            BrandedRatingSliderRow(
                 category: .scenery,
                 value: $scenery
             )
 
-            RatingSliderRow(
+            BrandedRatingSliderRow(
                 category: .visibility,
                 value: $visibility
             )
         }
-        .padding(16)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Comment Section
     private var commentSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Comment (Optional)")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "text.bubble.fill")
+                    .foregroundStyle(Theme.secondary)
+                Text("Comment (Optional)")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+            }
 
             TextEditor(text: $comment)
                 .frame(height: 100)
-                .padding(8)
-                .background(Color(.systemBackground))
+                .padding(12)
+                .scrollContentBackground(.hidden)
+                .background(Theme.surface)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color(.systemGray4), lineWidth: 1)
-                )
+                .foregroundStyle(Theme.textPrimary)
 
             Text("Share your experience driving this road")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textMuted)
         }
-        .padding(16)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Submit Button
     private var submitButton: some View {
-        Button {
+        BrandedFullWidthButton(
+            isNewRoad ? "Create Road" : "Submit Rating",
+            icon: isNewRoad ? "plus.circle.fill" : "star.fill",
+            style: isValid ? .primary : .secondary,
+            isLoading: isSubmitting
+        ) {
             submitRating()
-        } label: {
-            HStack {
-                if isSubmitting {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
-                } else {
-                    Image(systemName: isNewRoad ? "plus.circle.fill" : "star.fill")
-                    Text(isNewRoad ? "Create Road" : "Submit Rating")
-                }
-            }
-            .font(.headline)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(isValid ? Color.accentColor : Color.gray)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .disabled(!isValid || isSubmitting)
+        .opacity(isValid ? 1 : 0.6)
     }
 
     // MARK: - Submit Action
@@ -279,52 +326,57 @@ struct RatingSheetView: View {
     }
 }
 
-// MARK: - Rating Slider Row
-struct RatingSliderRow: View {
+// MARK: - Branded Rating Slider Row
+struct BrandedRatingSliderRow: View {
     let category: RatingCategory
     @Binding var value: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             // Header
             HStack {
-                Image(systemName: category.icon)
-                    .foregroundStyle(category.color)
-                    .frame(width: 24)
+                HStack(spacing: 10) {
+                    Image(systemName: category.icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(category.color)
+                        .frame(width: 28)
 
-                Text(category.title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+                    Text(category.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Theme.textPrimary)
+                }
 
                 Spacer()
 
                 Text("\(value)")
-                    .font(.title3)
+                    .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(category.color)
+                    .frame(width: 32)
             }
 
             // Custom Slider
-            RatingSlider(value: $value, color: category.color)
+            BrandedRatingSlider(value: $value, color: category.color)
 
             // Labels
             HStack {
                 Text(category.lowDescription)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textMuted)
 
                 Spacer()
 
                 Text(category.highDescription)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textMuted)
             }
         }
     }
 }
 
-// MARK: - Rating Slider
-struct RatingSlider: View {
+// MARK: - Branded Rating Slider
+struct BrandedRatingSlider: View {
     @Binding var value: Int
     let color: Color
 
@@ -333,37 +385,46 @@ struct RatingSlider: View {
             ZStack(alignment: .leading) {
                 // Track
                 Capsule()
-                    .fill(Color(.systemGray4))
+                    .fill(Theme.surface)
                     .frame(height: 8)
 
                 // Fill
                 Capsule()
-                    .fill(color.gradient)
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.8), color],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                     .frame(width: fillWidth(in: geometry), height: 8)
 
                 // Dots
                 HStack(spacing: 0) {
                     ForEach(1...5, id: \.self) { dotValue in
-                        Circle()
-                            .fill(dotValue <= value ? color : Color(.systemGray4))
-                            .frame(width: 16, height: 16)
-                            .overlay(
-                                Circle()
-                                    .stroke(dotValue == value ? color : .clear, lineWidth: 3)
-                                    .frame(width: 24, height: 24)
-                            )
-                            .frame(maxWidth: .infinity)
-                            .onTapGesture {
-                                withAnimation(.spring(response: 0.3)) {
-                                    value = dotValue
-                                }
-                                HapticManager.shared.selection()
+                        ZStack {
+                            Circle()
+                                .fill(dotValue <= value ? color : Theme.surface)
+                                .frame(width: 20, height: 20)
+                                .overlay(
+                                    Circle()
+                                        .stroke(dotValue == value ? color : .clear, lineWidth: 3)
+                                        .frame(width: 28, height: 28)
+                                )
+                                .shadow(color: dotValue == value ? color.opacity(0.5) : .clear, radius: 5)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.3)) {
+                                value = dotValue
                             }
+                            HapticManager.shared.selection()
+                        }
                     }
                 }
             }
         }
-        .frame(height: 32)
+        .frame(height: 36)
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { gesture in
@@ -379,7 +440,7 @@ struct RatingSlider: View {
     }
 
     private func updateValue(from gesture: DragGesture.Value) {
-        let width = UIScreen.main.bounds.width - 64 // Approximate width
+        let width = UIScreen.main.bounds.width - 80
         let stepWidth = width / 5
         let newValue = min(5, max(1, Int(gesture.location.x / stepWidth) + 1))
 
@@ -402,7 +463,7 @@ struct RatingDotsView: View {
         HStack(spacing: 4) {
             ForEach(0..<5) { index in
                 Circle()
-                    .fill(index < rating ? color : Color.gray.opacity(0.2))
+                    .fill(index < rating ? color : Theme.surface)
                     .frame(width: size, height: size)
             }
         }
