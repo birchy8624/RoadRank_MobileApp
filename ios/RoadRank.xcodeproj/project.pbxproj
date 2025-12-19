@@ -30,6 +30,8 @@
 		A10000000000000000000020 /* Ride.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* Ride.swift */; };
 		A10000000000000000000021 /* RideTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* RideTrackingView.swift */; };
 		A10000000000000000000022 /* RideSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* RideSummaryView.swift */; };
+		A10000000000000000000030 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000030 /* SplashScreenView.swift */; };
+		A10000000000000000000031 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000031 /* OnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +59,8 @@
 		B10000000000000000000020 /* Ride.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ride.swift; sourceTree = "<group>"; };
 		B10000000000000000000021 /* RideTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideTrackingView.swift; sourceTree = "<group>"; };
 		B10000000000000000000022 /* RideSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideSummaryView.swift; sourceTree = "<group>"; };
+		B10000000000000000000030 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		B10000000000000000000031 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		C10000000000000000000001 /* RoadRank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoadRank.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -124,6 +128,8 @@
 				B10000000000000000000021 /* RideTrackingView.swift */,
 				B10000000000000000000022 /* RideSummaryView.swift */,
 				B10000000000000000000010 /* SearchSheetView.swift */,
+				B10000000000000000000030 /* SplashScreenView.swift */,
+				B10000000000000000000031 /* OnboardingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -249,6 +255,8 @@
 				A10000000000000000000020 /* Ride.swift in Sources */,
 				A10000000000000000000021 /* RideTrackingView.swift in Sources */,
 				A10000000000000000000022 /* RideSummaryView.swift in Sources */,
+				A10000000000000000000030 /* SplashScreenView.swift in Sources */,
+				A10000000000000000000031 /* OnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
