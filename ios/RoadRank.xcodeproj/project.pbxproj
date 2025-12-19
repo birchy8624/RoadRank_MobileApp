@@ -27,6 +27,9 @@
 		A10000000000000000000012 /* RatingBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* RatingBadge.swift */; };
 		A10000000000000000000013 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* Color+Extensions.swift */; };
 		A10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift */; };
+		A10000000000000000000020 /* Ride.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* Ride.swift */; };
+		A10000000000000000000021 /* RideTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* RideTrackingView.swift */; };
+		A10000000000000000000022 /* RideSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* RideSummaryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +54,9 @@
 		B10000000000000000000013 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		B10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extensions.swift"; sourceTree = "<group>"; };
 		B10000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000000000000000000020 /* Ride.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ride.swift; sourceTree = "<group>"; };
+		B10000000000000000000021 /* RideTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideTrackingView.swift; sourceTree = "<group>"; };
+		B10000000000000000000022 /* RideSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideSummaryView.swift; sourceTree = "<group>"; };
 		C10000000000000000000001 /* RoadRank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoadRank.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -101,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000004 /* Road.swift */,
+				B10000000000000000000020 /* Ride.swift */,
 				B10000000000000000000005 /* SearchResult.swift */,
 			);
 			path = Models;
@@ -114,6 +121,8 @@
 				B1000000000000000000000D /* DiscoverView.swift */,
 				B1000000000000000000000E /* ProfileView.swift */,
 				B1000000000000000000000F /* RatingSheetView.swift */,
+				B10000000000000000000021 /* RideTrackingView.swift */,
+				B10000000000000000000022 /* RideSummaryView.swift */,
 				B10000000000000000000010 /* SearchSheetView.swift */,
 			);
 			path = Views;
@@ -237,6 +246,9 @@
 				A10000000000000000000012 /* RatingBadge.swift in Sources */,
 				A10000000000000000000013 /* Color+Extensions.swift in Sources */,
 				A10000000000000000000014 /* CLLocationCoordinate2D+Extensions.swift in Sources */,
+				A10000000000000000000020 /* Ride.swift in Sources */,
+				A10000000000000000000021 /* RideTrackingView.swift in Sources */,
+				A10000000000000000000022 /* RideSummaryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
