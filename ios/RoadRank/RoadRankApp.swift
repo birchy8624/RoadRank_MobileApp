@@ -5,6 +5,8 @@ struct RoadRankApp: App {
     @StateObject private var locationManager = LocationManager()
     @StateObject private var roadStore = RoadStore()
     @StateObject private var appState = AppState()
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var isShowingSplash = true
 
     init() {
         configureAppearance()
@@ -12,11 +14,30 @@ struct RoadRankApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(locationManager)
-                .environmentObject(roadStore)
-                .environmentObject(appState)
-                .preferredColorScheme(.light)
+            ZStack {
+                if isShowingSplash {
+                    SplashScreenView()
+                        .transition(.opacity)
+                } else if !hasCompletedOnboarding {
+                    OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
+                        .transition(.opacity)
+                } else {
+                    ContentView()
+                        .environmentObject(locationManager)
+                        .environmentObject(roadStore)
+                        .environmentObject(appState)
+                        .transition(.opacity)
+                }
+            }
+            .preferredColorScheme(.dark)
+            .onAppear {
+                // Show splash for 2.5 seconds then transition
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        isShowingSplash = false
+                    }
+                }
+            }
         }
     }
 
