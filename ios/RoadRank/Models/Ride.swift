@@ -2,7 +2,7 @@ import Foundation
 import CoreLocation
 
 // MARK: - Ride
-struct Ride: Identifiable, Codable {
+struct Ride: Identifiable, Codable, Equatable {
     let id: UUID
     var startTime: Date
     var endTime: Date?
@@ -114,7 +114,7 @@ struct Ride: Identifiable, Codable {
 }
 
 // MARK: - Ride Point
-struct RidePoint: Identifiable, Codable {
+struct RidePoint: Identifiable, Codable, Equatable {
     let id: UUID
     let coordinate: Coordinate
     let timestamp: Date
