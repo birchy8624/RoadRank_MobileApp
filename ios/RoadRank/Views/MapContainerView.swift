@@ -167,6 +167,31 @@ struct MapContainerView: View {
                         }
                     }
                 } else {
+                    // Start Ride Button
+                    Button {
+                        locationManager.startRide()
+                        appState.isRideTrackingActive = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "location.fill")
+                                .font(.system(size: 20, weight: .semibold))
+                            Text("Start Ride")
+                                .font(.headline)
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(
+                                colors: [.green, .mint],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(Capsule())
+                        .shadow(color: .green.opacity(0.3), radius: 10, x: 0, y: 5)
+                    }
+
                     Spacer()
 
                     // Draw Road Button
@@ -192,8 +217,6 @@ struct MapContainerView: View {
                         .clipShape(Capsule())
                         .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

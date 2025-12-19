@@ -40,6 +40,21 @@ struct ContentView: View {
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
+        .fullScreenCover(isPresented: $appState.isRideTrackingActive) {
+            RideTrackingView()
+                .environmentObject(locationManager)
+                .environmentObject(appState)
+        }
+        .sheet(isPresented: $appState.showRideSummary) {
+            if let ride = appState.finishedRide {
+                RideSummaryView(ride: ride)
+                    .environmentObject(appState)
+                    .environmentObject(locationManager)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+                    .interactiveDismissDisabled()
+            }
+        }
         .onAppear {
             locationManager.requestPermission()
             Task {

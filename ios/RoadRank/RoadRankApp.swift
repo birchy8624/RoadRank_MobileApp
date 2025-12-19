@@ -56,6 +56,11 @@ class AppState: ObservableObject {
     @Published var toastMessage: String = ""
     @Published var toastType: ToastType = .info
 
+    // Ride tracking state
+    @Published var isRideTrackingActive: Bool = false
+    @Published var showRideSummary: Bool = false
+    @Published var finishedRide: Ride?
+
     enum Tab: String, CaseIterable {
         case map = "Map"
         case discover = "Discover"
