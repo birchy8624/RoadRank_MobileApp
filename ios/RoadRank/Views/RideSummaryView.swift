@@ -34,6 +34,7 @@ struct RideSummaryView: View {
                 }
                 .padding()
             }
+            .background(Theme.background)
             .navigationTitle("Ride Summary")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -41,16 +42,24 @@ struct RideSummaryView: View {
                     Button("Close") {
                         closeAndReset()
                     }
+                    .foregroundStyle(Theme.textSecondary)
                 }
             }
+            .toolbarBackground(Theme.backgroundSecondary, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 
     // MARK: - Map Section
     private var mapSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Your Route")
-                .font(.headline)
+            HStack {
+                Image(systemName: "map.fill")
+                    .foregroundStyle(Theme.primary)
+                Text("Your Route")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+            }
 
             RideSummaryMapView(
                 fullPath: ride.clCoordinates,
@@ -58,7 +67,11 @@ struct RideSummaryView: View {
                 isSelectingSegment: isSelectingSegment
             )
             .frame(height: 250)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Theme.cardBorder, lineWidth: 1)
+            )
         }
     }
 
@@ -67,53 +80,61 @@ struct RideSummaryView: View {
         VStack(spacing: 16) {
             // Main stats row
             HStack(spacing: 0) {
-                StatCard(
+                BrandedStatCard(
                     icon: "clock.fill",
                     value: ride.formattedDuration,
                     label: "Duration",
-                    color: .blue
+                    color: Theme.primary
                 )
 
-                Divider()
-                    .frame(height: 60)
+                Rectangle()
+                    .fill(Theme.surface)
+                    .frame(width: 1, height: 60)
 
-                StatCard(
+                BrandedStatCard(
                     icon: "road.lanes",
                     value: ride.formattedDistance,
                     label: "Distance",
-                    color: .green
+                    color: Theme.success
                 )
 
-                Divider()
-                    .frame(height: 60)
+                Rectangle()
+                    .fill(Theme.surface)
+                    .frame(width: 1, height: 60)
 
-                StatCard(
+                BrandedStatCard(
                     icon: "speedometer",
                     value: ride.formattedAverageSpeed,
                     label: "Avg Speed",
-                    color: .orange
+                    color: Theme.warning
                 )
             }
-            .padding(.vertical, 16)
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .padding(.vertical, 20)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Theme.backgroundSecondary)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Theme.cardBorder, lineWidth: 1)
+                    )
+            )
 
             // Secondary stats
             HStack(spacing: 12) {
-                MiniStatCard(
+                MiniStatCardBranded(
                     icon: "arrow.up",
                     value: ride.formattedMaxSpeed,
                     label: "Max Speed"
                 )
 
-                MiniStatCard(
+                MiniStatCardBranded(
                     icon: "point.topleft.down.to.point.bottomright.curvepath",
                     value: "\(ride.path.count)",
                     label: "Points"
                 )
 
                 if let start = ride.path.first {
-                    MiniStatCard(
+                    MiniStatCardBranded(
                         icon: "clock",
                         value: formatTime(start.timestamp),
                         label: "Started"
@@ -127,8 +148,13 @@ struct RideSummaryView: View {
     private var segmentSelectionSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Select Segment to Save")
-                    .font(.headline)
+                HStack(spacing: 8) {
+                    Image(systemName: "scissors")
+                        .foregroundStyle(Theme.primary)
+                    Text("Select Segment to Save")
+                        .font(.headline)
+                        .foregroundStyle(Theme.textPrimary)
+                }
 
                 Spacer()
 
@@ -137,23 +163,30 @@ struct RideSummaryView: View {
                     selectedEndIndex = ride.path.count - 1
                 }
                 .font(.subheadline)
-                .foregroundStyle(.blue)
+                .fontWeight(.medium)
+                .foregroundStyle(Theme.primary)
             }
 
             VStack(spacing: 20) {
                 // Start slider
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Start Point")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(Theme.success)
+                                .frame(width: 8, height: 8)
+                            Text("Start Point")
+                                .font(.subheadline)
+                                .foregroundStyle(Theme.textSecondary)
+                        }
                         Spacer()
                         Text("Point \(selectedStartIndex + 1)")
                             .font(.caption)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 8)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Theme.success)
+                            .padding(.horizontal, 10)
                             .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.2))
+                            .background(Theme.success.opacity(0.2))
                             .clipShape(Capsule())
                     }
 
@@ -170,22 +203,28 @@ struct RideSummaryView: View {
                         in: 0...Double(max(0, ride.path.count - 2)),
                         step: 1
                     )
-                    .tint(.green)
+                    .tint(Theme.success)
                 }
 
                 // End slider
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("End Point")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(Theme.danger)
+                                .frame(width: 8, height: 8)
+                            Text("End Point")
+                                .font(.subheadline)
+                                .foregroundStyle(Theme.textSecondary)
+                        }
                         Spacer()
                         Text("Point \(selectedEndIndex + 1)")
                             .font(.caption)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 8)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Theme.danger)
+                            .padding(.horizontal, 10)
                             .padding(.vertical, 4)
-                            .background(Color.red.opacity(0.2))
+                            .background(Theme.danger.opacity(0.2))
                             .clipShape(Capsule())
                     }
 
@@ -202,37 +241,45 @@ struct RideSummaryView: View {
                         in: 1...Double(ride.path.count - 1),
                         step: 1
                     )
-                    .tint(.red)
+                    .tint(Theme.danger)
                 }
 
                 // Segment info
                 HStack {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("Selected Segment")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                            .foregroundStyle(Theme.textMuted)
                         Text("\(selectedEndIndex - selectedStartIndex + 1) points")
                             .font(.headline)
+                            .foregroundStyle(Theme.textPrimary)
                     }
 
                     Spacer()
 
-                    VStack(alignment: .trailing) {
+                    VStack(alignment: .trailing, spacing: 4) {
                         Text("Distance")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                            .foregroundStyle(Theme.textMuted)
                         Text(String(format: "%.2f km", selectedSegmentDistance))
                             .font(.headline)
+                            .foregroundStyle(Theme.textPrimary)
                     }
                 }
-                .padding()
-                .background(Color(.systemGray6))
+                .padding(16)
+                .background(Theme.surface)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
-        .padding()
-        .background(Color(.systemGray6).opacity(0.5))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Action Buttons
@@ -240,70 +287,25 @@ struct RideSummaryView: View {
         VStack(spacing: 12) {
             if !isSelectingSegment {
                 // Save as Road button
-                Button {
+                BrandedFullWidthButton("Save as Road & Rate", icon: "road.lanes", style: .primary) {
                     isSelectingSegment = true
                     selectedStartIndex = 0
                     selectedEndIndex = max(0, ride.path.count - 1)
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "road.lanes")
-                        Text("Save as Road & Rate")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(
-                        LinearGradient(
-                            colors: [.blue, .cyan],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
                 // Discard button
-                Button {
+                BrandedFullWidthButton("Discard Ride", icon: "trash", style: .secondary) {
                     closeAndReset()
-                } label: {
-                    Text("Discard Ride")
-                        .font(.headline)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(.systemGray6))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             } else {
                 // Confirm selection button
-                Button {
+                BrandedFullWidthButton("Continue to Rating", icon: "checkmark.circle.fill", style: .success) {
                     saveSelectedSegment()
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                        Text("Continue to Rating")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Color.green)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
-                .disabled(selectedEndIndex <= selectedStartIndex)
 
                 // Cancel selection
-                Button {
+                BrandedFullWidthButton("Cancel Selection", style: .secondary) {
                     isSelectingSegment = false
-                } label: {
-                    Text("Cancel Selection")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(.systemGray6))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             }
         }
@@ -352,33 +354,8 @@ struct RideSummaryView: View {
     }
 }
 
-// MARK: - Stat Card
-struct StatCard: View {
-    let icon: String
-    let value: String
-    let label: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(color)
-
-            Text(value)
-                .font(.title3)
-                .fontWeight(.bold)
-
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-// MARK: - Mini Stat Card
-struct MiniStatCard: View {
+// MARK: - Mini Stat Card Branded
+struct MiniStatCardBranded: View {
     let icon: String
     let value: String
     let label: String
@@ -388,19 +365,26 @@ struct MiniStatCard: View {
             HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textMuted)
                 Text(value)
                     .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
+                    .foregroundStyle(Theme.textPrimary)
             }
             Text(label)
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
     }
 }
 
@@ -461,7 +445,12 @@ struct RideSummaryMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let polyline = overlay as? FullRidePolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = polyline.isSelecting ? .systemGray3 : .systemBlue
+                // Use theme colors
+                if polyline.isSelecting {
+                    renderer.strokeColor = UIColor(white: 0.5, alpha: 0.5)
+                } else {
+                    renderer.strokeColor = UIColor(red: 14/255, green: 165/255, blue: 233/255, alpha: 1) // Theme.primary
+                }
                 renderer.lineWidth = polyline.isSelecting ? 4 : 5
                 renderer.lineCap = .round
                 renderer.lineJoin = .round
@@ -470,7 +459,7 @@ struct RideSummaryMapView: UIViewRepresentable {
 
             if let polyline = overlay as? SelectedSegmentPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = .systemGreen
+                renderer.strokeColor = UIColor(red: 16/255, green: 185/255, blue: 129/255, alpha: 1) // Theme.success
                 renderer.lineWidth = 6
                 renderer.lineCap = .round
                 renderer.lineJoin = .round
@@ -488,7 +477,10 @@ struct RideSummaryMapView: UIViewRepresentable {
             let identifier = markerAnnotation.isStart ? "StartMarker" : "EndMarker"
             let markerView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
             markerView.glyphImage = UIImage(systemName: markerAnnotation.isStart ? "play.fill" : "stop.fill")
-            markerView.markerTintColor = markerAnnotation.isStart ? .systemGreen : .systemRed
+            // Use theme colors
+            markerView.markerTintColor = markerAnnotation.isStart ?
+                UIColor(red: 16/255, green: 185/255, blue: 129/255, alpha: 1) : // Theme.success
+                UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1) // Theme.danger
             markerView.displayPriority = .required
             return markerView
         }

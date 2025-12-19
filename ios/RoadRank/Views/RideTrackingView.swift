@@ -20,22 +20,22 @@ struct RideTrackingView: View {
             .ignoresSafeArea()
 
             // Gradient overlay for readability
-            VStack {
+            VStack(spacing: 0) {
                 LinearGradient(
-                    colors: [.black.opacity(0.6), .clear],
+                    colors: [Theme.background.opacity(0.9), Theme.background.opacity(0.3), .clear],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: 200)
+                .frame(height: 180)
 
                 Spacer()
 
                 LinearGradient(
-                    colors: [.clear, .black.opacity(0.8)],
+                    colors: [.clear, Theme.background.opacity(0.7), Theme.background.opacity(0.95)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: 350)
+                .frame(height: 400)
             }
             .ignoresSafeArea()
 
@@ -77,48 +77,24 @@ struct RideTrackingView: View {
     private var topBar: some View {
         HStack {
             // Cancel button
-            Button {
+            BrandedIconButton("xmark", size: 44, style: .glass) {
                 showCancelConfirmation = true
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(.ultraThinMaterial.opacity(0.5))
-                    .clipShape(Circle())
             }
 
             Spacer()
 
             // Status indicator
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(locationManager.rideState == .tracking ? .green : .orange)
-                    .frame(width: 10, height: 10)
-                    .shadow(color: locationManager.rideState == .tracking ? .green : .orange, radius: 4)
-
-                Text(locationManager.rideState == .tracking ? "Recording" : "Paused")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.white)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(.ultraThinMaterial.opacity(0.5))
-            .clipShape(Capsule())
+            BrandedBadge(
+                locationManager.rideState == .tracking ? "Recording" : "Paused",
+                color: locationManager.rideState == .tracking ? Theme.success : Theme.warning,
+                isAnimated: locationManager.rideState == .tracking
+            )
 
             Spacer()
 
             // Center on user button
-            Button {
+            BrandedIconButton("location.fill", size: 44, style: .glass) {
                 locationManager.centerOnUserLocation()
-            } label: {
-                Image(systemName: "location.fill")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(.ultraThinMaterial.opacity(0.5))
-                    .clipShape(Circle())
             }
         }
         .padding(.horizontal, 16)
@@ -127,78 +103,110 @@ struct RideTrackingView: View {
 
     // MARK: - Stats Display
     private var statsDisplay: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 32) {
             // Time - Large central display
-            VStack(spacing: 4) {
+            VStack(spacing: 8) {
                 Text(locationManager.formattedElapsedTime)
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 76, weight: .bold, design: .rounded))
+                    .foregroundStyle(Theme.textPrimary)
                     .monospacedDigit()
+                    .shadow(color: Theme.primary.opacity(0.3), radius: 10, x: 0, y: 0)
 
                 Text("Duration")
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .fontWeight(.medium)
+                    .foregroundStyle(Theme.textSecondary)
             }
 
-            // Speed and Distance
-            HStack(spacing: 40) {
-                // Speed
-                VStack(spacing: 4) {
+            // Speed and Distance Cards
+            HStack(spacing: 20) {
+                // Speed Card
+                VStack(spacing: 8) {
                     HStack(alignment: .lastTextBaseline, spacing: 4) {
                         Text(locationManager.formattedCurrentSpeed)
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundStyle(Theme.textPrimary)
                             .monospacedDigit()
 
                         Text("km/h")
                             .font(.headline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .fontWeight(.medium)
+                            .foregroundStyle(Theme.textSecondary)
                     }
 
-                    Text("Speed")
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+                    HStack(spacing: 6) {
+                        Image(systemName: "speedometer")
+                            .foregroundStyle(Theme.primary)
+                        Text("Speed")
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    .font(.subheadline)
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Theme.backgroundSecondary.opacity(0.8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Theme.cardBorder, lineWidth: 1)
+                        )
+                )
 
-                // Divider
-                Rectangle()
-                    .fill(.white.opacity(0.3))
-                    .frame(width: 1, height: 60)
-
-                // Distance
-                VStack(spacing: 4) {
+                // Distance Card
+                VStack(spacing: 8) {
                     HStack(alignment: .lastTextBaseline, spacing: 4) {
                         Text(distanceValue)
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundStyle(Theme.textPrimary)
                             .monospacedDigit()
 
                         Text(distanceUnit)
                             .font(.headline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .fontWeight(.medium)
+                            .foregroundStyle(Theme.textSecondary)
                     }
 
-                    Text("Distance")
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+                    HStack(spacing: 6) {
+                        Image(systemName: "road.lanes")
+                            .foregroundStyle(Theme.success)
+                        Text("Distance")
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    .font(.subheadline)
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Theme.backgroundSecondary.opacity(0.8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Theme.cardBorder, lineWidth: 1)
+                        )
+                )
             }
+            .padding(.horizontal, 20)
 
             // Points tracked
             HStack(spacing: 8) {
                 Image(systemName: "point.topleft.down.to.point.bottomright.curvepath")
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Theme.textMuted)
                 Text("\(locationManager.currentRide?.path.count ?? 0) points tracked")
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Theme.textMuted)
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(Theme.surface.opacity(0.5))
+            .clipShape(Capsule())
         }
         .padding(.bottom, 40)
     }
 
     // MARK: - Control Buttons
     private var controlButtons: some View {
-        HStack(spacing: 24) {
+        HStack(spacing: 32) {
             // Pause/Resume Button
             Button {
                 if locationManager.rideState == .tracking {
@@ -207,50 +215,62 @@ struct RideTrackingView: View {
                     locationManager.resumeRide()
                 }
             } label: {
-                VStack(spacing: 8) {
-                    Image(systemName: locationManager.rideState == .tracking ? "pause.fill" : "play.fill")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(width: 70, height: 70)
-                        .background(
-                            Circle()
-                                .fill(.ultraThinMaterial)
-                        )
+                VStack(spacing: 10) {
+                    ZStack {
+                        Circle()
+                            .fill(Theme.backgroundSecondary)
+                            .frame(width: 70, height: 70)
+                            .overlay(
+                                Circle()
+                                    .stroke(Theme.cardBorder, lineWidth: 1)
+                            )
+
+                        Image(systemName: locationManager.rideState == .tracking ? "pause.fill" : "play.fill")
+                            .font(.system(size: 28, weight: .semibold))
+                            .foregroundStyle(Theme.textPrimary)
+                    }
 
                     Text(locationManager.rideState == .tracking ? "Pause" : "Resume")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(Theme.textSecondary)
                 }
             }
+            .buttonStyle(.plain)
 
             // Stop Button
             Button {
                 showStopConfirmation = true
             } label: {
-                VStack(spacing: 8) {
-                    Image(systemName: "stop.fill")
-                        .font(.system(size: 32, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(width: 90, height: 90)
-                        .background(
-                            Circle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.red, .red.opacity(0.7)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                        )
-                        .shadow(color: .red.opacity(0.4), radius: 10, x: 0, y: 5)
+                VStack(spacing: 10) {
+                    ZStack {
+                        // Glow effect
+                        Circle()
+                            .fill(Theme.danger.opacity(0.3))
+                            .frame(width: 100, height: 100)
+                            .blur(radius: 20)
+
+                        Circle()
+                            .fill(Theme.dangerGradient)
+                            .frame(width: 90, height: 90)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.2), lineWidth: 2)
+                            )
+                            .shadow(color: Theme.danger.opacity(0.5), radius: 15, x: 0, y: 8)
+
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 32, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
 
                     Text("Stop")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(Theme.textSecondary)
                 }
             }
+            .buttonStyle(.plain)
         }
     }
 
@@ -310,7 +330,8 @@ struct RideMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let polyline = overlay as? MKPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = .systemBlue
+                // Use theme colors
+                renderer.strokeColor = UIColor(red: 14/255, green: 165/255, blue: 233/255, alpha: 1) // Theme.primary
                 renderer.lineWidth = 5
                 renderer.lineCap = .round
                 renderer.lineJoin = .round

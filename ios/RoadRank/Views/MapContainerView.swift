@@ -80,30 +80,31 @@ struct MapContainerView: View {
                 showSearchSheet = true
                 HapticManager.shared.buttonTap()
             } label: {
-                HStack(spacing: 8) {
+                HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(Theme.primary)
                     Text("Search location...")
                         .font(.subheadline)
+                        .foregroundStyle(Theme.textSecondary)
                     Spacer()
                 }
-                .foregroundStyle(.secondary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(Theme.backgroundSecondary.opacity(0.95))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(Theme.cardBorder, lineWidth: 1)
+                        )
+                )
             }
 
             // Location Button
-            Button {
+            BrandedIconButton("location.fill", size: 44, style: .solid) {
                 locationManager.centerOnUserLocation()
                 HapticManager.shared.buttonTap()
-            } label: {
-                Image(systemName: "location.fill")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.blue)
-                    .frame(width: 44, height: 44)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Circle())
             }
         }
         .padding(.horizontal, 16)
@@ -122,31 +123,16 @@ struct MapContainerView: View {
             HStack(spacing: 12) {
                 if appState.isDrawingMode {
                     // Cancel Button
-                    Button {
+                    BrandedButton("Cancel", icon: "xmark", style: .danger) {
                         appState.stopDrawing()
                         appState.clearDrawing()
-                    } label: {
-                        Label("Cancel", systemImage: "xmark")
-                            .font(.headline)
-                            .foregroundStyle(.red)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 14)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Capsule())
                     }
 
                     // Clear Path Button
                     if !appState.drawnPath.isEmpty {
-                        Button {
+                        BrandedIconButton("arrow.uturn.backward", size: 50, style: .solid) {
                             appState.clearDrawing()
                             HapticManager.shared.buttonTap()
-                        } label: {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(.orange)
-                                .frame(width: 50, height: 50)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Circle())
                         }
                     }
 
@@ -154,68 +140,22 @@ struct MapContainerView: View {
 
                     // Done/Save Button
                     if appState.drawnPath.count >= 2 {
-                        Button {
+                        BrandedButton("Done", icon: "checkmark", style: .success) {
                             snapAndPrepareRating()
-                        } label: {
-                            Label("Done", systemImage: "checkmark")
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 14)
-                                .background(Color.accentColor)
-                                .clipShape(Capsule())
                         }
                     }
                 } else {
                     // Start Ride Button
-                    Button {
+                    BrandedButton("Start Ride", icon: "location.fill", style: .success) {
                         locationManager.startRide()
                         appState.isRideTrackingActive = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "location.fill")
-                                .font(.system(size: 20, weight: .semibold))
-                            Text("Start Ride")
-                                .font(.headline)
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 14)
-                        .background(
-                            LinearGradient(
-                                colors: [.green, .mint],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(Capsule())
-                        .shadow(color: .green.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
 
                     Spacer()
 
                     // Draw Road Button
-                    Button {
+                    BrandedButton("Draw Road", icon: "pencil.tip.crop.circle", style: .primary) {
                         appState.startDrawing()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "pencil.tip.crop.circle")
-                                .font(.system(size: 20, weight: .semibold))
-                            Text("Draw Road")
-                                .font(.headline)
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 14)
-                        .background(
-                            LinearGradient(
-                                colors: [.blue, .cyan],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(Capsule())
-                        .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
                 }
             }
@@ -226,68 +166,122 @@ struct MapContainerView: View {
 
     // MARK: - Drawing Mode Card
     private var drawingModeCard: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             HStack {
-                Image(systemName: "hand.draw.fill")
-                    .foregroundStyle(.blue)
-                Text("Drawing Mode")
-                    .font(.headline)
+                HStack(spacing: 8) {
+                    Image(systemName: "hand.draw.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(Theme.primary)
+                    Text("Drawing Mode")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Theme.textPrimary)
+                }
+
                 Spacer()
+
                 Text("\(appState.drawnPath.count) points")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .fontWeight(.medium)
+                    .foregroundStyle(Theme.textSecondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Theme.surface)
+                    .clipShape(Capsule())
             }
 
             if !appState.drawnPath.isEmpty {
                 HStack {
-                    Text("Distance:")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Text(String(format: "%.2f km", appState.drawnPath.totalDistanceInKm()))
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                    HStack(spacing: 6) {
+                        Image(systemName: "road.lanes")
+                            .font(.caption)
+                            .foregroundStyle(Theme.textMuted)
+                        Text("Distance:")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.textSecondary)
+                        Text(String(format: "%.2f km", appState.drawnPath.totalDistanceInKm()))
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Theme.textPrimary)
+                    }
+
                     Spacer()
 
                     if appState.drawnPath.totalDistanceInKm() > 20 {
-                        Label("Max 20km", systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text("Max 20km")
+                        }
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Theme.danger)
                     }
                 }
             } else {
-                Text("Tap on the map to draw your road path")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Image(systemName: "hand.tap.fill")
+                        .foregroundStyle(Theme.textMuted)
+                    Text("Tap on the map to draw your road path")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.textSecondary)
+                }
             }
         }
         .padding(16)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Theme.backgroundSecondary.opacity(0.95))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
+        .shadow(color: Theme.cardShadow, radius: 10, x: 0, y: 5)
         .padding(.horizontal, 16)
     }
 
     // MARK: - Snapping Overlay
     private var snappingOverlay: some View {
         ZStack {
-            Color.black.opacity(0.4)
+            Theme.background.opacity(0.7)
                 .ignoresSafeArea()
 
-            VStack(spacing: 16) {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .tint(.white)
+            VStack(spacing: 20) {
+                // Animated loading indicator
+                ZStack {
+                    Circle()
+                        .stroke(Theme.surface, lineWidth: 4)
+                        .frame(width: 60, height: 60)
 
-                Text("Snapping to road...")
-                    .font(.headline)
-                    .foregroundStyle(.white)
+                    Circle()
+                        .trim(from: 0, to: 0.7)
+                        .stroke(Theme.primaryGradient, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        .frame(width: 60, height: 60)
+                        .rotationEffect(.degrees(-90))
+                        .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: UUID())
+                }
 
-                Text("Finding the best match for your path")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.8))
+                VStack(spacing: 8) {
+                    Text("Snapping to road...")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Theme.textPrimary)
+
+                    Text("Finding the best match for your path")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.textSecondary)
+                }
             }
-            .padding(32)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .padding(40)
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Theme.backgroundSecondary)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24)
+                            .stroke(Theme.cardBorder, lineWidth: 1)
+                    )
+            )
+            .shadow(color: Theme.cardShadow, radius: 20, x: 0, y: 10)
         }
     }
 
@@ -333,19 +327,28 @@ struct RoadDetailSheet: View {
             ScrollView {
                 VStack(spacing: 20) {
                     // Header
-                    VStack(spacing: 8) {
+                    VStack(spacing: 12) {
                         Text(road.displayName)
                             .font(.title2)
                             .fontWeight(.bold)
+                            .foregroundStyle(Theme.textPrimary)
 
                         HStack(spacing: 16) {
-                            Label(road.formattedDistance, systemImage: "road.lanes")
+                            HStack(spacing: 6) {
+                                Image(systemName: "road.lanes")
+                                    .foregroundStyle(Theme.primary)
+                                Text(road.formattedDistance)
+                            }
                             if let count = road.ratingCount, count > 0 {
-                                Label("\(count) ratings", systemImage: "star.fill")
+                                HStack(spacing: 6) {
+                                    Image(systemName: "star.fill")
+                                        .foregroundStyle(Theme.warning)
+                                    Text("\(count) ratings")
+                                }
                             }
                         }
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.textSecondary)
                     }
                     .padding(.top)
 
@@ -365,27 +368,21 @@ struct RoadDetailSheet: View {
                     }
 
                     // Add Rating Button
-                    Button {
+                    BrandedFullWidthButton("Add Your Rating", icon: "plus.circle.fill", style: .primary) {
                         appState.prepareForRating(road: road)
-                    } label: {
-                        Label("Add Your Rating", systemImage: "plus.circle.fill")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(Color.accentColor)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                     .padding(.horizontal)
                 }
                 .padding(.bottom, 20)
             }
+            .background(Theme.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         // Dismiss handled by sheet
                     }
+                    .foregroundStyle(Theme.primary)
                 }
             }
         }
@@ -398,30 +395,37 @@ struct RoadDetailSheet: View {
         VStack(spacing: 12) {
             Text("Overall Rating")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
 
-            HStack(spacing: 4) {
+            HStack(spacing: 8) {
                 Text(String(format: "%.1f", road.overallRating))
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .font(.system(size: 52, weight: .bold, design: .rounded))
                     .foregroundStyle(road.ratingColor.color)
 
-                VStack(alignment: .leading) {
-                    HStack(spacing: 2) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 3) {
                         ForEach(0..<5) { index in
                             Image(systemName: index < Int(road.overallRating.rounded()) ? "star.fill" : "star")
-                                .foregroundStyle(index < Int(road.overallRating.rounded()) ? .yellow : .gray.opacity(0.3))
+                                .font(.system(size: 14))
+                                .foregroundStyle(index < Int(road.overallRating.rounded()) ? Theme.warning : Theme.surface)
                         }
                     }
                     Text("out of 5")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.textMuted)
                 }
             }
         }
-        .padding(20)
+        .padding(24)
         .frame(maxWidth: .infinity)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
         .padding(.horizontal)
     }
 
@@ -429,28 +433,49 @@ struct RoadDetailSheet: View {
         VStack(spacing: 16) {
             ForEach(RatingCategory.allCases) { category in
                 let value = ratingValue(for: category)
-                HStack {
+                HStack(spacing: 12) {
                     Image(systemName: category.icon)
+                        .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(category.color)
-                        .frame(width: 24)
+                        .frame(width: 28)
 
                     Text(category.title)
                         .font(.subheadline)
+                        .foregroundStyle(Theme.textPrimary)
 
                     Spacer()
 
-                    RatingDotsView(rating: Int(value.rounded()), color: category.color)
+                    // Progress bar
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Theme.surface)
+                                .frame(height: 8)
+
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(category.color)
+                                .frame(width: geometry.size.width * (value / 5.0), height: 8)
+                        }
+                    }
+                    .frame(width: 80, height: 8)
 
                     Text(String(format: "%.1f", value))
                         .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
+                        .foregroundStyle(Theme.textPrimary)
                         .frame(width: 32, alignment: .trailing)
                 }
             }
         }
         .padding(20)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
         .padding(.horizontal)
     }
 
@@ -458,26 +483,35 @@ struct RoadDetailSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Community Comments")
                 .font(.headline)
+                .foregroundStyle(Theme.textPrimary)
                 .padding(.horizontal)
 
             ForEach(ratings.filter { $0.comment != nil && !$0.comment!.isEmpty }) { rating in
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        RatingDotsView(rating: Int(rating.overallRating.rounded()), color: .yellow)
+                        HStack(spacing: 3) {
+                            ForEach(0..<5) { index in
+                                Image(systemName: index < Int(rating.overallRating.rounded()) ? "star.fill" : "star")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(index < Int(rating.overallRating.rounded()) ? Theme.warning : Theme.surface)
+                            }
+                        }
                         Spacer()
                         if let date = rating.createdAt {
                             Text(formatDate(date))
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.textMuted)
                         }
                     }
                     Text(rating.comment ?? "")
                         .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Theme.textSecondary)
                 }
                 .padding(16)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Theme.surface)
+                )
             }
             .padding(.horizontal)
         }
