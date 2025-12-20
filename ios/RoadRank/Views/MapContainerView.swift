@@ -21,6 +21,8 @@ struct MapContainerView: View {
                 snappedPath: appState.snappedPath,
                 isDrawingMode: appState.isDrawingMode,
                 selectedRoad: $selectedRoadForPopup,
+                shouldCenterOnUser: $locationManager.shouldCenterOnUser,
+                userLocation: locationManager.location,
                 onPathUpdate: { newPath in
                     appState.drawnPath = newPath
                 },
