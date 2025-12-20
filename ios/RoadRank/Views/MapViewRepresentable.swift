@@ -9,6 +9,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     let isDrawingMode: Bool
     @Binding var selectedRoad: Road?
     @Binding var shouldCenterOnUser: Bool
+    @Binding var roadToCenter: Road?
     var userLocation: CLLocation?
     var onPathUpdate: (([Coordinate]) -> Void)?
     var onMapTap: ((CLLocationCoordinate2D) -> Void)?
@@ -56,6 +57,27 @@ struct MapViewRepresentable: UIViewRepresentable {
             // Reset the flag after centering
             DispatchQueue.main.async {
                 self.shouldCenterOnUser = false
+            }
+        }
+
+        // Center on road if requested (from Discover tab navigation)
+        if let road = roadToCenter {
+            let coordinates = road.coordinates
+            if coordinates.count >= 2 {
+                let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+                let rect = polyline.boundingMapRect
+                let insets = UIEdgeInsets(top: 80, left: 40, bottom: 200, right: 40)
+                mapView.setVisibleMapRect(rect, edgePadding: insets, animated: true)
+            } else if let center = road.centerCoordinate {
+                let region = MKCoordinateRegion(
+                    center: center,
+                    span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+                )
+                mapView.setRegion(region, animated: true)
+            }
+            // Reset after centering
+            DispatchQueue.main.async {
+                self.roadToCenter = nil
             }
         }
 

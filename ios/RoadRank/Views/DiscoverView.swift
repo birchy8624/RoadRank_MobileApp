@@ -80,6 +80,7 @@ struct DiscoverView: View {
                 LazyVStack(spacing: 16) {
                     // Stats Header
                     statsHeader
+                        .padding(.top, 12)
 
                     // Filter Pills
                     filterPills
