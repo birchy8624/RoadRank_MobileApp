@@ -23,6 +23,27 @@ struct Coordinate: Codable, Equatable, Hashable, Identifiable {
     }
 }
 
+// MARK: - Rating Summary (nested object in API response)
+struct RatingSummary: Codable {
+    let ratingCount: Int?
+    let avgTwistiness: Double?
+    let avgSurfaceCondition: Double?
+    let avgFunFactor: Double?
+    let avgScenery: Double?
+    let avgVisibility: Double?
+    let avgOverall: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case ratingCount = "rating_count"
+        case avgTwistiness = "avg_twistiness"
+        case avgSurfaceCondition = "avg_surface_condition"
+        case avgFunFactor = "avg_fun_factor"
+        case avgScenery = "avg_scenery"
+        case avgVisibility = "avg_visibility"
+        case avgOverall = "avg_overall"
+    }
+}
+
 // MARK: - Road
 struct Road: Codable, Identifiable, Equatable {
     let id: String
@@ -34,12 +55,8 @@ struct Road: Codable, Identifiable, Equatable {
     let scenery: Int?
     let visibility: Int?
     let createdAt: String?
-    var ratingCount: Int?
-    var avgTwistiness: Double?
-    var avgSurfaceCondition: Double?
-    var avgFunFactor: Double?
-    var avgScenery: Double?
-    var avgVisibility: Double?
+    let ratingSummary: RatingSummary?
+    var deviceId: String?
 
     enum CodingKeys: String, CodingKey {
         case id, name, path, twistiness, visibility
@@ -47,19 +64,51 @@ struct Road: Codable, Identifiable, Equatable {
         case funFactor = "fun_factor"
         case scenery
         case createdAt = "created_at"
-        case ratingCount = "rating_count"
-        case avgTwistiness = "avg_twistiness"
-        case avgSurfaceCondition = "avg_surface_condition"
-        case avgFunFactor = "avg_fun_factor"
-        case avgScenery = "avg_scenery"
-        case avgVisibility = "avg_visibility"
+        case ratingSummary = "rating_summary"
+        case deviceId = "device_id"
     }
+
+    // Custom decoder to handle id as either Int or String
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // Handle id as either Int or String
+        if let intId = try? container.decode(Int.self, forKey: .id) {
+            id = String(intId)
+        } else {
+            id = try container.decode(String.self, forKey: .id)
+        }
+
+        name = try container.decodeIfPresent(String.self, forKey: .name)
+        path = try container.decode([Coordinate].self, forKey: .path)
+        twistiness = try container.decodeIfPresent(Int.self, forKey: .twistiness)
+        surfaceCondition = try container.decodeIfPresent(Int.self, forKey: .surfaceCondition)
+        funFactor = try container.decodeIfPresent(Int.self, forKey: .funFactor)
+        scenery = try container.decodeIfPresent(Int.self, forKey: .scenery)
+        visibility = try container.decodeIfPresent(Int.self, forKey: .visibility)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        ratingSummary = try container.decodeIfPresent(RatingSummary.self, forKey: .ratingSummary)
+        deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
+    }
+
+    // Computed properties for backwards compatibility
+    var ratingCount: Int? { ratingSummary?.ratingCount }
+    var avgTwistiness: Double? { ratingSummary?.avgTwistiness }
+    var avgSurfaceCondition: Double? { ratingSummary?.avgSurfaceCondition }
+    var avgFunFactor: Double? { ratingSummary?.avgFunFactor }
+    var avgScenery: Double? { ratingSummary?.avgScenery }
+    var avgVisibility: Double? { ratingSummary?.avgVisibility }
 
     var displayName: String {
         name ?? "Unnamed Road"
     }
 
     var overallRating: Double {
+        // Prefer the pre-computed avgOverall from the API
+        if let avgOverall = ratingSummary?.avgOverall {
+            return avgOverall
+        }
+        // Fallback to computing from individual ratings
         let ratings = [avgTwistiness, avgSurfaceCondition, avgFunFactor, avgScenery, avgVisibility]
         let validRatings = ratings.compactMap { $0 }
         guard !validRatings.isEmpty else { return 0 }
@@ -95,6 +144,10 @@ struct Road: Codable, Identifiable, Equatable {
         String(format: "%.1f km", distanceInKm)
     }
 
+    var isMyRoad: Bool {
+        deviceId == DeviceManager.shared.deviceId
+    }
+
     static func == (lhs: Road, rhs: Road) -> Bool {
         lhs.id == rhs.id
     }
@@ -120,6 +173,33 @@ struct Rating: Codable, Identifiable {
         case funFactor = "fun_factor"
         case scenery, visibility, comment
         case createdAt = "created_at"
+    }
+
+    // Custom decoder to handle id as either Int or String
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // Handle id as either Int or String
+        if let intId = try? container.decode(Int.self, forKey: .id) {
+            id = String(intId)
+        } else {
+            id = try container.decodeIfPresent(String.self, forKey: .id)
+        }
+
+        // Handle roadId as either Int or String
+        if let intRoadId = try? container.decode(Int.self, forKey: .roadId) {
+            roadId = String(intRoadId)
+        } else {
+            roadId = try container.decode(String.self, forKey: .roadId)
+        }
+
+        twistiness = try container.decode(Int.self, forKey: .twistiness)
+        surfaceCondition = try container.decode(Int.self, forKey: .surfaceCondition)
+        funFactor = try container.decode(Int.self, forKey: .funFactor)
+        scenery = try container.decode(Int.self, forKey: .scenery)
+        visibility = try container.decode(Int.self, forKey: .visibility)
+        comment = try container.decodeIfPresent(String.self, forKey: .comment)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
     }
 
     var overallRating: Double {
@@ -230,6 +310,7 @@ struct NewRoadInput {
     var scenery: Int = 3
     var visibility: Int = 3
     var comment: String = ""
+    var deviceId: String = DeviceManager.shared.deviceId
 
     var isValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
@@ -245,9 +326,30 @@ struct NewRoadInput {
             "fun_factor": funFactor,
             "scenery": scenery,
             "visibility": visibility,
-            "comment": comment.isEmpty ? NSNull() : comment
+            "comment": comment.isEmpty ? NSNull() : comment,
+            "device_id": deviceId
         ]
     }
+}
+
+// MARK: - Device Manager
+class DeviceManager {
+    static let shared = DeviceManager()
+
+    private let deviceIdKey = "roadrank_device_id"
+
+    var deviceId: String {
+        if let existingId = UserDefaults.standard.string(forKey: deviceIdKey) {
+            return existingId
+        }
+
+        // Generate a new unique device ID
+        let newId = UUID().uuidString
+        UserDefaults.standard.set(newId, forKey: deviceIdKey)
+        return newId
+    }
+
+    private init() {}
 }
 
 // MARK: - New Rating Input

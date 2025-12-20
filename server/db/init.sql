@@ -11,8 +11,12 @@ CREATE TABLE IF NOT EXISTS roads (
     scenery INTEGER,
     visibility INTEGER,
     name TEXT,
+    device_id TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Create index on device_id for efficient "My Roads" queries
+CREATE INDEX IF NOT EXISTS idx_roads_device_id ON roads(device_id);
 
 -- Create road_ratings table
 CREATE TABLE IF NOT EXISTS road_ratings (

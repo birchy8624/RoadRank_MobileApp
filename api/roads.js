@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      const { path, twistiness, surface_condition, fun_factor, scenery, visibility, name, comment } = req.body;
+      const { path, twistiness, surface_condition, fun_factor, scenery, visibility, name, comment, device_id } = req.body;
 
       const { data: newRoad, error: roadError } = await supabase
         .from('roads')
@@ -92,6 +92,7 @@ module.exports = async (req, res) => {
           scenery,
           visibility,
           name,
+          device_id: device_id || null,
         }])
         .select()
         .single();

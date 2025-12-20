@@ -77,8 +77,8 @@ struct ProfileView: View {
 
             HStack(spacing: 12) {
                 ProfileStatCard(
-                    title: "Roads Explored",
-                    value: "\(roadStore.roads.count)",
+                    title: "My Roads",
+                    value: "\(myRoads.count)",
                     icon: "map.fill",
                     color: .blue
                 )
@@ -93,14 +93,14 @@ struct ProfileView: View {
 
             HStack(spacing: 12) {
                 ProfileStatCard(
-                    title: "Ratings Given",
+                    title: "Total Ratings",
                     value: "\(totalRatings)",
                     icon: "star.fill",
                     color: .yellow
                 )
 
                 ProfileStatCard(
-                    title: "Top Road",
+                    title: "Best Road",
                     value: String(format: "%.1f", topRoadRating),
                     icon: "trophy.fill",
                     color: .orange
@@ -109,8 +109,12 @@ struct ProfileView: View {
         }
     }
 
+    private var myRoads: [Road] {
+        roadStore.roads.filter { $0.isMyRoad }
+    }
+
     private var totalDistance: String {
-        let total = roadStore.roads.reduce(0) { $0 + $1.distanceInKm }
+        let total = myRoads.reduce(0) { $0 + $1.distanceInKm }
         if total >= 1000 {
             return String(format: "%.0f km", total)
         }
@@ -118,11 +122,11 @@ struct ProfileView: View {
     }
 
     private var totalRatings: Int {
-        roadStore.roads.compactMap(\.ratingCount).reduce(0, +)
+        myRoads.compactMap(\.ratingCount).reduce(0, +)
     }
 
     private var topRoadRating: Double {
-        roadStore.roads.map(\.overallRating).max() ?? 0
+        myRoads.map(\.overallRating).max() ?? 0
     }
 
     // MARK: - Menu Section
