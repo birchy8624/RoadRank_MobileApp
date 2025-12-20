@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      const { twistiness, surface_condition, fun_factor, scenery, visibility, comment } = req.body;
+      const { twistiness, surface_condition, fun_factor, scenery, visibility, comment, device_id } = req.body;
 
       const validateScore = (score) => {
         const parsed = parseNumeric(score);
@@ -105,6 +105,7 @@ module.exports = async (req, res) => {
           scenery,
           visibility,
           comment,
+          device_id: device_id || null,
         }])
         .select()
         .single();

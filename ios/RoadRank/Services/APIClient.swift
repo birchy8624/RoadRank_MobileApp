@@ -83,13 +83,25 @@ actor APIClient {
 
     // MARK: - Ratings API
 
+    // Response wrapper for GET ratings
+    private struct RatingsResponse: Codable {
+        let ratings: [Rating]
+        let summary: RatingSummary?
+    }
+
+    // Response wrapper for POST rating
+    private struct RatingResponse: Codable {
+        let rating: Rating
+        let summary: RatingSummary?
+    }
+
     func fetchRatings(for roadId: String) async throws -> [Rating] {
         let url = try makeURL(path: "/api/roads/\(roadId)/ratings")
         let data = try await performRequest(url: url)
 
         do {
-            let ratings = try JSONDecoder().decode([Rating].self, from: data)
-            return ratings
+            let response = try JSONDecoder().decode(RatingsResponse.self, from: data)
+            return response.ratings
         } catch {
             throw APIError.decodingError(error)
         }
@@ -102,8 +114,8 @@ actor APIClient {
         let data = try await performRequest(url: url, method: "POST", body: body)
 
         do {
-            let rating = try JSONDecoder().decode(Rating.self, from: data)
-            return rating
+            let response = try JSONDecoder().decode(RatingResponse.self, from: data)
+            return response.rating
         } catch {
             throw APIError.decodingError(error)
         }

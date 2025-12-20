@@ -10,6 +10,7 @@ struct DiscoverView: View {
     @State private var searchText: String = ""
     @State private var sortOption: SortOption = .newest
     @State private var filterRating: Double = 0
+    @State private var roadFilter: RoadFilter = .myRoads
 
     enum SortOption: String, CaseIterable {
         case newest = "Newest"
@@ -18,8 +19,21 @@ struct DiscoverView: View {
         case nearest = "Nearest"
     }
 
+    enum RoadFilter: String, CaseIterable {
+        case myRoads = "My Roads"
+        case allRoads = "All Roads"
+    }
+
     var filteredRoads: [Road] {
         var result = roadStore.roads
+
+        // Filter by road ownership
+        switch roadFilter {
+        case .myRoads:
+            result = result.filter { $0.isMyRoad }
+        case .allRoads:
+            break // Show all roads
+        }
 
         // Filter by search text
         if !searchText.isEmpty {
@@ -54,6 +68,10 @@ struct DiscoverView: View {
         }
 
         return result
+    }
+
+    var myRoadsCount: Int {
+        roadStore.roads.filter { $0.isMyRoad }.count
     }
 
     var body: some View {
@@ -93,9 +111,9 @@ struct DiscoverView: View {
     private var statsHeader: some View {
         HStack(spacing: 16) {
             StatCard(
-                title: "Roads",
-                value: "\(roadStore.roads.count)",
-                icon: "road.lanes",
+                title: roadFilter == .myRoads ? "My Roads" : "All Roads",
+                value: "\(filteredRoads.count)",
+                icon: roadFilter == .myRoads ? "person.fill" : "road.lanes",
                 color: .blue
             )
 
@@ -116,19 +134,39 @@ struct DiscoverView: View {
     }
 
     private var averageRating: Double {
-        let ratingsWithValues = roadStore.roads.filter { $0.overallRating > 0 }
+        let roads = roadFilter == .myRoads ? roadStore.roads.filter { $0.isMyRoad } : roadStore.roads
+        let ratingsWithValues = roads.filter { $0.overallRating > 0 }
         guard !ratingsWithValues.isEmpty else { return 0 }
         return ratingsWithValues.map(\.overallRating).reduce(0, +) / Double(ratingsWithValues.count)
     }
 
     private var topRating: Double {
-        roadStore.roads.map(\.overallRating).max() ?? 0
+        let roads = roadFilter == .myRoads ? roadStore.roads.filter { $0.isMyRoad } : roadStore.roads
+        return roads.map(\.overallRating).max() ?? 0
     }
 
     // MARK: - Filter Pills
     private var filterPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
+                // Road Filter (My Roads / All Roads)
+                ForEach(RoadFilter.allCases, id: \.self) { filter in
+                    FilterPill(
+                        title: filter == .myRoads ? "\(filter.rawValue) (\(myRoadsCount))" : filter.rawValue,
+                        isSelected: roadFilter == filter,
+                        icon: filter == .myRoads ? "person.fill" : "globe"
+                    ) {
+                        withAnimation(.spring(response: 0.3)) {
+                            roadFilter = filter
+                        }
+                        HapticManager.shared.selection()
+                    }
+                }
+
+                Divider()
+                    .frame(height: 24)
+                    .padding(.horizontal, 4)
+
                 // Sort Options
                 ForEach(SortOption.allCases, id: \.self) { option in
                     FilterPill(
@@ -165,15 +203,17 @@ struct DiscoverView: View {
     // MARK: - Empty State
     private var emptyState: some View {
         VStack(spacing: 16) {
-            Image(systemName: "road.lanes")
+            Image(systemName: roadFilter == .myRoads ? "person.crop.circle.badge.questionmark" : "road.lanes")
                 .font(.system(size: 60))
                 .foregroundStyle(.tertiary)
 
-            Text("No Roads Found")
+            Text(roadFilter == .myRoads ? "No Roads Yet" : "No Roads Found")
                 .font(.title2)
                 .fontWeight(.semibold)
 
-            Text("Try adjusting your filters or be the first to add a road!")
+            Text(roadFilter == .myRoads
+                ? "You haven't added any roads yet. Start by drawing your first road!"
+                : "Try adjusting your filters or be the first to add a road!")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -262,10 +302,24 @@ struct RoadCard: View {
                 // Header
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(road.displayName)
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
+                        HStack(spacing: 8) {
+                            Text(road.displayName)
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+
+                            // My Road badge
+                            if road.isMyRoad {
+                                Text("My Road")
+                                    .font(.caption2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.accentColor)
+                                    .clipShape(Capsule())
+                            }
+                        }
 
                         HStack(spacing: 12) {
                             Label(road.formattedDistance, systemImage: "road.lanes")
