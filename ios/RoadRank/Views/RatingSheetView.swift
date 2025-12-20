@@ -367,6 +367,15 @@ struct RatingSheetView: View {
             }
         }
     }
+
+    private func toggleWarning(_ warning: RoadWarning) {
+        if selectedWarnings.contains(warning) {
+            selectedWarnings.remove(warning)
+        } else {
+            selectedWarnings.insert(warning)
+        }
+        HapticManager.shared.selection()
+    }
 }
 
 // MARK: - Branded Rating Slider Row
@@ -495,14 +504,6 @@ struct BrandedRatingSlider: View {
         }
     }
 
-    private func toggleWarning(_ warning: RoadWarning) {
-        if selectedWarnings.contains(warning) {
-            selectedWarnings.remove(warning)
-        } else {
-            selectedWarnings.insert(warning)
-        }
-        HapticManager.shared.selection()
-    }
 }
 
 // MARK: - Warning Toggle Button
