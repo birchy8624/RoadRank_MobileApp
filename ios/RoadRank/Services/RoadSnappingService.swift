@@ -15,7 +15,7 @@ actor RoadSnappingService {
         self.session = URLSession(configuration: config)
     }
 
-    // MARK: - Snap Path to Road
+    // MARK: - Snap Path to Road (Primary: Apple MapKit, Fallback: OSRM)
 
     func snapToRoad(path: [Coordinate]) async throws -> [Coordinate] {
         guard path.count >= 2 else {
@@ -30,6 +30,112 @@ actor RoadSnappingService {
             throw SnappingError.pathTooLong
         }
 
+        // Try Apple MapKit first (native iOS solution)
+        do {
+            let snapped = try await snapWithMapKit(path: path)
+            if !snapped.isEmpty {
+                return snapped
+            }
+        } catch {
+            // Fall through to OSRM fallback
+            print("MapKit snap failed: \(error.localizedDescription), trying OSRM fallback")
+        }
+
+        // Fallback to OSRM
+        return try await snapWithOSRM(path: path, distanceKm: distanceKm)
+    }
+
+    // MARK: - Apple MapKit Snap-to-Road
+
+    private func snapWithMapKit(path: [Coordinate]) async throws -> [Coordinate] {
+        guard path.count >= 2 else { return [] }
+
+        // For MapKit, we use MKDirections to get routes between waypoints
+        // This naturally snaps to roads as it calculates driving directions
+        var allCoordinates: [Coordinate] = []
+
+        // Simplify path to reduce API calls (max 10 waypoints for routing)
+        let waypoints = selectWaypoints(from: path, maxCount: 10)
+
+        // Request directions between consecutive waypoints
+        for i in 0..<(waypoints.count - 1) {
+            let source = waypoints[i]
+            let destination = waypoints[i + 1]
+
+            let routeCoordinates = try await getRouteCoordinates(from: source, to: destination)
+
+            if i == 0 {
+                allCoordinates.append(contentsOf: routeCoordinates)
+            } else if !routeCoordinates.isEmpty {
+                // Skip first point to avoid duplicates
+                allCoordinates.append(contentsOf: routeCoordinates.dropFirst())
+            }
+        }
+
+        return allCoordinates
+    }
+
+    private func getRouteCoordinates(from source: Coordinate, to destination: Coordinate) async throws -> [Coordinate] {
+        let request = MKDirections.Request()
+
+        let sourcePlacemark = MKPlacemark(coordinate: source.clLocationCoordinate2D)
+        let destPlacemark = MKPlacemark(coordinate: destination.clLocationCoordinate2D)
+
+        request.source = MKMapItem(placemark: sourcePlacemark)
+        request.destination = MKMapItem(placemark: destPlacemark)
+        request.transportType = .automobile
+        request.requestsAlternateRoutes = false
+
+        let directions = MKDirections(request: request)
+
+        return try await withCheckedThrowingContinuation { continuation in
+            directions.calculate { response, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                guard let route = response?.routes.first else {
+                    continuation.resume(returning: [])
+                    return
+                }
+
+                // Extract coordinates from the route polyline
+                var coordinates: [Coordinate] = []
+                let pointCount = route.polyline.pointCount
+                let points = route.polyline.points()
+
+                for i in 0..<pointCount {
+                    let mapPoint = points[i]
+                    let coord = mapPoint.coordinate
+                    coordinates.append(Coordinate(lat: coord.latitude, lng: coord.longitude))
+                }
+
+                continuation.resume(returning: coordinates)
+            }
+        }
+    }
+
+    private func selectWaypoints(from path: [Coordinate], maxCount: Int) -> [Coordinate] {
+        guard path.count > maxCount else { return path }
+
+        // Always include first and last points
+        var waypoints: [Coordinate] = [path.first!]
+
+        // Select evenly spaced intermediate points
+        let step = Double(path.count - 1) / Double(maxCount - 1)
+        for i in 1..<(maxCount - 1) {
+            let index = Int(Double(i) * step)
+            waypoints.append(path[index])
+        }
+
+        waypoints.append(path.last!)
+        return waypoints
+    }
+
+    // MARK: - OSRM Fallback
+
+    private func snapWithOSRM(path: [Coordinate], distanceKm: Double) async throws -> [Coordinate] {
         // Simplify path if needed
         let simplifiedPath = simplifyPath(path, targetCount: 100)
 
