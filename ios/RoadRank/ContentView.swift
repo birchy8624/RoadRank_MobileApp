@@ -64,6 +64,27 @@ struct ContentView: View {
                 await roadStore.fetchRoads()
             }
         }
+        .onOpenURL { url in
+            Task {
+                await handleDeepLink(url)
+            }
+        }
+    }
+
+    @MainActor
+    private func handleDeepLink(_ url: URL) async {
+        guard let roadId = Road.roadId(from: url) else { return }
+
+        if roadStore.roads.isEmpty {
+            await roadStore.fetchRoads()
+        }
+
+        if let road = roadStore.road(withId: roadId) {
+            appState.selectedTab = .map
+            appState.selectedRoad = road
+        } else {
+            appState.showToast("Shared road not found.", type: .warning)
+        }
     }
 }
 
