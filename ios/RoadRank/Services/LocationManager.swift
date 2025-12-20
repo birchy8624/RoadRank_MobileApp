@@ -12,6 +12,7 @@ class LocationManager: NSObject, ObservableObject {
     @Published var isTracking: Bool = false
     @Published var heading: CLHeading?
     @Published var region: MKCoordinateRegion = .defaultRegion
+    @Published var shouldCenterOnUser: Bool = false
 
     private let manager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
@@ -74,12 +75,20 @@ class LocationManager: NSObject, ObservableObject {
     }
 
     func centerOnUserLocation() {
-        guard let location = location else { return }
-        withAnimation(.easeInOut(duration: 0.5)) {
-            region = MKCoordinateRegion(
-                center: location.coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-            )
+        // If not authorized, request permission and set flag to center when authorized
+        guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
+            shouldCenterOnUser = true
+            requestPermission()
+            return
+        }
+
+        // If we have a location, center on it immediately
+        if let location = location {
+            shouldCenterOnUser = true // Trigger the map to center
+        } else {
+            // No location yet, set flag so we center when location arrives
+            shouldCenterOnUser = true
+            startUpdatingLocation()
         }
     }
 
@@ -288,11 +297,16 @@ extension LocationManager: CLLocationManagerDelegate {
 
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         Task { @MainActor in
+            let previousStatus = self.authorizationStatus
             self.authorizationStatus = manager.authorizationStatus
 
             switch manager.authorizationStatus {
             case .authorizedWhenInUse, .authorizedAlways:
                 self.startUpdatingLocation()
+                // If permission was just granted (was not determined or denied before), center on user
+                if previousStatus == .notDetermined || previousStatus == .denied {
+                    self.shouldCenterOnUser = true
+                }
             case .denied, .restricted:
                 self.stopUpdatingLocation()
             default:

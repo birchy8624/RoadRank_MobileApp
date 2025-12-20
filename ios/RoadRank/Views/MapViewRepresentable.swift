@@ -8,6 +8,8 @@ struct MapViewRepresentable: UIViewRepresentable {
     let snappedPath: [Coordinate]?
     let isDrawingMode: Bool
     @Binding var selectedRoad: Road?
+    @Binding var shouldCenterOnUser: Bool
+    var userLocation: CLLocation?
     var onPathUpdate: (([Coordinate]) -> Void)?
     var onMapTap: ((CLLocationCoordinate2D) -> Void)?
 
@@ -43,6 +45,19 @@ struct MapViewRepresentable: UIViewRepresentable {
         context.coordinator.onPathUpdate = onPathUpdate
         context.coordinator.onMapTap = onMapTap
         context.coordinator.roads = roads
+
+        // Center on user location if requested
+        if shouldCenterOnUser, let location = userLocation {
+            let region = MKCoordinateRegion(
+                center: location.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+            mapView.setRegion(region, animated: true)
+            // Reset the flag after centering
+            DispatchQueue.main.async {
+                self.shouldCenterOnUser = false
+            }
+        }
 
         // Update overlays
         mapView.removeOverlays(mapView.overlays)
