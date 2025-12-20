@@ -395,7 +395,13 @@ struct RoadDetailSheet: View {
                     .padding(.horizontal)
 
                     if let shareURL = road.shareURL {
-                        ShareLink(item: shareURL) {
+                        let shareMessage = "Check out this road I discovered on RoadRank!"
+                        ShareLink(
+                            item: shareURL,
+                            subject: Text(road.displayName),
+                            message: Text(shareMessage),
+                            preview: SharePreview(road.displayName, image: Image(uiImage: SharePreviewBuilder.image))
+                        ) {
                             HStack(spacing: 8) {
                                 Image(systemName: "square.and.arrow.up")
                                     .font(.system(size: 18, weight: .semibold))
