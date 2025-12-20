@@ -165,14 +165,15 @@ actor RoadSnappingService {
         while index < encoded.endIndex {
             var result = 0
             var shift = 0
+            var byte = 0
 
             repeat {
                 let char = encoded[index]
                 index = encoded.index(after: index)
-                let byte = Int(char.asciiValue! - 63)
+                byte = Int(char.asciiValue! - 63)
                 result |= (byte & 0x1F) << shift
                 shift += 5
-            } while result >= 0x20
+            } while byte >= 0x20
 
             let dlat = ((result & 1) != 0) ? ~(result >> 1) : (result >> 1)
             lat += dlat
@@ -183,10 +184,10 @@ actor RoadSnappingService {
             repeat {
                 let char = encoded[index]
                 index = encoded.index(after: index)
-                let byte = Int(char.asciiValue! - 63)
+                byte = Int(char.asciiValue! - 63)
                 result |= (byte & 0x1F) << shift
                 shift += 5
-            } while result >= 0x20
+            } while byte >= 0x20
 
             let dlng = ((result & 1) != 0) ? ~(result >> 1) : (result >> 1)
             lng += dlng
