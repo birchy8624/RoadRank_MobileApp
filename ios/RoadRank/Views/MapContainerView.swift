@@ -11,6 +11,7 @@ struct MapContainerView: View {
     @State private var position: MapCameraPosition = .region(.defaultRegion)
     @State private var selectedRoadForPopup: Road?
     @State private var showSearchSheet: Bool = false
+    @State private var roadToCenter: Road?
 
     var body: some View {
         ZStack {
@@ -22,6 +23,7 @@ struct MapContainerView: View {
                 isDrawingMode: appState.isDrawingMode,
                 selectedRoad: $selectedRoadForPopup,
                 shouldCenterOnUser: $locationManager.shouldCenterOnUser,
+                roadToCenter: $roadToCenter,
                 userLocation: locationManager.location,
                 onPathUpdate: { newPath in
                     appState.drawnPath = newPath
@@ -71,6 +73,15 @@ struct MapContainerView: View {
             RoadDetailSheet(road: road)
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
+        }
+        .onChange(of: appState.selectedRoad) { _, newRoad in
+            if let road = newRoad {
+                // Center the map on the selected road and show its detail sheet
+                roadToCenter = road
+                selectedRoadForPopup = road
+                // Clear the appState selection so it can be selected again
+                appState.selectedRoad = nil
+            }
         }
     }
 
@@ -163,7 +174,7 @@ struct MapContainerView: View {
             }
             .padding(.horizontal, 16)
         }
-        .padding(.bottom, 100) // Space for tab bar
+        .padding(.bottom, 120) // Space for tab bar
     }
 
     // MARK: - Drawing Mode Card
