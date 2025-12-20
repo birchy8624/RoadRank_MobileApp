@@ -9,6 +9,7 @@ struct RideTrackingView: View {
 
     @State private var showStopConfirmation = false
     @State private var showCancelConfirmation = false
+    @State private var showInsufficientPointsAlert = false
 
     var body: some View {
         ZStack {
@@ -70,6 +71,15 @@ struct RideTrackingView: View {
             Button("Keep Riding", role: .cancel) { }
         } message: {
             Text("This will discard all ride data. This cannot be undone.")
+        }
+        .alert("No Distance Travelled", isPresented: $showInsufficientPointsAlert) {
+            Button("Keep Riding", role: .cancel) { }
+            Button("Discard Ride", role: .destructive) {
+                locationManager.cancelRide()
+                dismiss()
+            }
+        } message: {
+            Text("You need to travel at least a short distance before saving a road. Keep riding to track more points, or discard this ride.")
         }
     }
 
@@ -240,7 +250,12 @@ struct RideTrackingView: View {
 
             // Stop Button
             Button {
-                showStopConfirmation = true
+                // Check if we have enough points to save a road (minimum 2)
+                if (locationManager.currentRide?.path.count ?? 0) < 2 {
+                    showInsufficientPointsAlert = true
+                } else {
+                    showStopConfirmation = true
+                }
             } label: {
                 VStack(spacing: 10) {
                     ZStack {
