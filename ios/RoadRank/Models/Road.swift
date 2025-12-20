@@ -187,6 +187,7 @@ struct Rating: Codable, Identifiable {
     let scenery: Int
     let visibility: Int
     let comment: String?
+    let warnings: [RoadWarning]?
     let deviceId: String?
     let createdAt: String?
 
@@ -196,7 +197,7 @@ struct Rating: Codable, Identifiable {
         case twistiness
         case surfaceCondition = "surface_condition"
         case funFactor = "fun_factor"
-        case scenery, visibility, comment
+        case scenery, visibility, comment, warnings
         case deviceId = "device_id"
         case createdAt = "created_at"
     }
@@ -225,6 +226,7 @@ struct Rating: Codable, Identifiable {
         scenery = try container.decode(Int.self, forKey: .scenery)
         visibility = try container.decode(Int.self, forKey: .visibility)
         comment = try container.decodeIfPresent(String.self, forKey: .comment)
+        warnings = try container.decodeIfPresent([RoadWarning].self, forKey: .warnings)
         deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
         createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
     }
@@ -299,6 +301,31 @@ enum RatingCategory: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Road Warnings
+enum RoadWarning: String, CaseIterable, Identifiable, Codable {
+    case speedCamera = "speed_camera"
+    case potholes = "potholes"
+    case traffic = "traffic"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .speedCamera: return "Speed Cameras"
+        case .potholes: return "Potholes"
+        case .traffic: return "Traffic"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .speedCamera: return "camera.fill"
+        case .potholes: return "exclamationmark.triangle.fill"
+        case .traffic: return "car.fill"
+        }
+    }
+}
+
 // MARK: - Rating Color
 enum RatingColor {
     case poor, fair, good, excellent
@@ -341,6 +368,7 @@ struct NewRoadInput {
     var scenery: Int = 3
     var visibility: Int = 3
     var comment: String = ""
+    var warnings: [RoadWarning] = []
     var deviceId: String = DeviceManager.shared.deviceId
 
     var isValid: Bool {
@@ -358,6 +386,7 @@ struct NewRoadInput {
             "scenery": scenery,
             "visibility": visibility,
             "comment": comment.isEmpty ? NSNull() : comment,
+            "warnings": warnings.map(\.rawValue),
             "device_id": deviceId
         ]
     }
@@ -392,6 +421,7 @@ struct NewRatingInput {
     var scenery: Int = 3
     var visibility: Int = 3
     var comment: String = ""
+    var warnings: [RoadWarning] = []
     var deviceId: String = DeviceManager.shared.deviceId
 
     func toPayload() -> [String: Any] {
@@ -402,6 +432,7 @@ struct NewRatingInput {
             "scenery": scenery,
             "visibility": visibility,
             "comment": comment.isEmpty ? NSNull() : comment,
+            "warnings": warnings.map(\.rawValue),
             "device_id": deviceId
         ]
     }

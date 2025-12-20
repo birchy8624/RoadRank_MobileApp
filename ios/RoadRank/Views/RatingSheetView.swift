@@ -16,6 +16,7 @@ struct RatingSheetView: View {
     @State private var funFactor: Int = 3
     @State private var scenery: Int = 3
     @State private var visibility: Int = 3
+    @State private var selectedWarnings: Set<RoadWarning> = []
     @State private var comment: String = ""
     @State private var isSubmitting: Bool = false
     @State private var showError: Bool = false
@@ -47,6 +48,9 @@ struct RatingSheetView: View {
 
                     // Rating Sliders
                     ratingSection
+
+                    // Warnings
+                    warningsSection
 
                     // Comment
                     commentSection
@@ -223,6 +227,43 @@ struct RatingSheetView: View {
         )
     }
 
+    // MARK: - Warnings Section
+    private var warningsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(Theme.warning)
+                Text("Warnings")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+            }
+
+            Text("Tap any warnings that apply to this road.")
+                .font(.caption)
+                .foregroundStyle(Theme.textMuted)
+
+            HStack(spacing: 12) {
+                ForEach(RoadWarning.allCases) { warning in
+                    WarningToggleButton(
+                        warning: warning,
+                        isSelected: selectedWarnings.contains(warning)
+                    ) {
+                        toggleWarning(warning)
+                    }
+                }
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
+    }
+
     // MARK: - Comment Section
     private var commentSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -290,6 +331,7 @@ struct RatingSheetView: View {
                 input.scenery = scenery
                 input.visibility = visibility
                 input.comment = comment
+                input.warnings = Array(selectedWarnings)
 
                 success = await roadStore.createRoad(input)
             } else if let road = road {
@@ -301,6 +343,7 @@ struct RatingSheetView: View {
                 input.scenery = scenery
                 input.visibility = visibility
                 input.comment = comment
+                input.warnings = Array(selectedWarnings)
 
                 success = await roadStore.submitRating(input)
             }
@@ -450,6 +493,44 @@ struct BrandedRatingSlider: View {
             }
             HapticManager.shared.selection()
         }
+    }
+
+    private func toggleWarning(_ warning: RoadWarning) {
+        if selectedWarnings.contains(warning) {
+            selectedWarnings.remove(warning)
+        } else {
+            selectedWarnings.insert(warning)
+        }
+        HapticManager.shared.selection()
+    }
+}
+
+// MARK: - Warning Toggle Button
+struct WarningToggleButton: View {
+    let warning: RoadWarning
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: warning.icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(isSelected ? Theme.warning : Theme.textMuted)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? Theme.warning.opacity(0.15) : Theme.surface)
+                    )
+                Text(warning.title)
+                    .font(.caption2)
+                    .foregroundStyle(isSelected ? Theme.textPrimary : Theme.textMuted)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
     }
 }
 

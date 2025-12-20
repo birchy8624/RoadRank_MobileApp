@@ -334,6 +334,10 @@ struct RoadDetailSheet: View {
     @EnvironmentObject var roadStore: RoadStore
     @State private var ratings: [Rating] = []
     @State private var isLoadingRatings: Bool = false
+    private var warningSummary: [RoadWarning] {
+        let warnings = ratings.compactMap(\.warnings).flatMap { $0 }
+        return Array(Set(warnings)).sorted { $0.title < $1.title }
+    }
 
     var body: some View {
         NavigationStack {
@@ -368,6 +372,10 @@ struct RoadDetailSheet: View {
                     // Overall Rating
                     if road.overallRating > 0 {
                         overallRatingCard
+                    }
+
+                    if !warningSummary.isEmpty {
+                        warningSummaryCard
                     }
 
                     // Rating Categories
@@ -511,6 +519,35 @@ struct RoadDetailSheet: View {
         .padding(.horizontal)
     }
 
+    private var warningSummaryCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(Theme.warning)
+                Text("Road Warnings")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+            }
+
+            HStack(spacing: 12) {
+                ForEach(warningSummary) { warning in
+                    WarningIndicator(warning: warning)
+                }
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
+        .padding(.horizontal)
+    }
+
     private var commentsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Community Comments")
@@ -575,6 +612,29 @@ struct RoadDetailSheet: View {
             return displayFormatter.string(from: date)
         }
         return dateString
+    }
+}
+
+// MARK: - Warning Indicator
+struct WarningIndicator: View {
+    let warning: RoadWarning
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: warning.icon)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Theme.warning)
+                .frame(width: 36, height: 36)
+                .background(
+                    Circle()
+                        .fill(Theme.warning.opacity(0.15))
+                )
+            Text(warning.title)
+                .font(.caption2)
+                .foregroundStyle(Theme.textPrimary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
