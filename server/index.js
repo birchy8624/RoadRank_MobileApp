@@ -168,7 +168,7 @@ app.get('/api/roads/:id/ratings', async (req, res) => {
 app.post('/api/roads/:id/ratings', async (req, res) => {
   try {
     const roadId = req.params.id;
-    const { twistiness, surface_condition, fun_factor, scenery, visibility, comment } = req.body;
+    const { twistiness, surface_condition, fun_factor, scenery, visibility, comment, device_id } = req.body;
 
     const validateScore = (score) => {
       const parsed = parseNumeric(score);
@@ -189,6 +189,7 @@ app.post('/api/roads/:id/ratings', async (req, res) => {
         scenery,
         visibility,
         comment,
+        device_id: device_id || null,
       }])
       .select()
       .single();

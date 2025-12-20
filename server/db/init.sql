@@ -28,8 +28,12 @@ CREATE TABLE IF NOT EXISTS road_ratings (
     scenery INTEGER CHECK (scenery BETWEEN 1 AND 5),
     visibility INTEGER CHECK (visibility BETWEEN 1 AND 5),
     comment TEXT,
+    device_id TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Create index on device_id for efficient "My Ratings" queries
+CREATE INDEX IF NOT EXISTS idx_road_ratings_device_id ON road_ratings(device_id);
 
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_road_ratings_road_id ON road_ratings(road_id);

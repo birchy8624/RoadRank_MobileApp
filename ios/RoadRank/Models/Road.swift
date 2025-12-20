@@ -163,6 +163,7 @@ struct Rating: Codable, Identifiable {
     let scenery: Int
     let visibility: Int
     let comment: String?
+    let deviceId: String?
     let createdAt: String?
 
     enum CodingKeys: String, CodingKey {
@@ -172,6 +173,7 @@ struct Rating: Codable, Identifiable {
         case surfaceCondition = "surface_condition"
         case funFactor = "fun_factor"
         case scenery, visibility, comment
+        case deviceId = "device_id"
         case createdAt = "created_at"
     }
 
@@ -199,7 +201,12 @@ struct Rating: Codable, Identifiable {
         scenery = try container.decode(Int.self, forKey: .scenery)
         visibility = try container.decode(Int.self, forKey: .visibility)
         comment = try container.decodeIfPresent(String.self, forKey: .comment)
+        deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
         createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+    }
+
+    var isMyRating: Bool {
+        deviceId == DeviceManager.shared.deviceId
     }
 
     var overallRating: Double {
@@ -361,6 +368,7 @@ struct NewRatingInput {
     var scenery: Int = 3
     var visibility: Int = 3
     var comment: String = ""
+    var deviceId: String = DeviceManager.shared.deviceId
 
     func toPayload() -> [String: Any] {
         [
@@ -369,7 +377,8 @@ struct NewRatingInput {
             "fun_factor": funFactor,
             "scenery": scenery,
             "visibility": visibility,
-            "comment": comment.isEmpty ? NSNull() : comment
+            "comment": comment.isEmpty ? NSNull() : comment,
+            "device_id": deviceId
         ]
     }
 }
