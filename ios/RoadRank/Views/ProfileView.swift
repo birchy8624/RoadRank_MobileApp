@@ -27,6 +27,7 @@ struct ProfileView: View {
                 .padding(.bottom, 100)
             }
             .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
             }

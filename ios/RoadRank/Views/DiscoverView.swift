@@ -100,6 +100,7 @@ struct DiscoverView: View {
                 .padding(.bottom, 100)
             }
             .navigationTitle("Discover")
+            .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: "Search roads...")
             .refreshable {
                 await roadStore.fetchRoads()
