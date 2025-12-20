@@ -10,12 +10,15 @@ struct ContentView: View {
             TabView(selection: $appState.selectedTab) {
                 MapContainerView()
                     .tag(AppState.Tab.map)
+                    .toolbar(.hidden, for: .tabBar)
 
                 DiscoverView()
                     .tag(AppState.Tab.discover)
+                    .toolbar(.hidden, for: .tabBar)
 
                 ProfileView()
                     .tag(AppState.Tab.profile)
+                    .toolbar(.hidden, for: .tabBar)
             }
             .safeAreaInset(edge: .bottom) {
                 BrandedTabBar(selectedTab: $appState.selectedTab)
