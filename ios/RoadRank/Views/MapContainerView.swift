@@ -385,6 +385,25 @@ struct RoadDetailSheet: View {
                         appState.prepareForRating(road: road)
                     }
                     .padding(.horizontal)
+
+                    if let shareURL = road.shareURL {
+                        ShareLink(item: shareURL) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 18, weight: .semibold))
+                                Text("Share Road")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                            }
+                            .foregroundStyle(BrandedButton.ButtonStyle.secondary.textColor)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(BrandedButton.ButtonStyle.secondary.gradient)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .shadow(color: BrandedButton.ButtonStyle.secondary.shadowColor, radius: 10, x: 0, y: 5)
+                        }
+                        .padding(.horizontal)
+                    }
                 }
                 .padding(.bottom, 20)
             }

@@ -103,6 +103,30 @@ struct Road: Codable, Identifiable, Equatable {
         name ?? "Unnamed Road"
     }
 
+    static let shareScheme = "roadrank"
+    static let shareHost = "road"
+
+    var shareURL: URL? {
+        var components = URLComponents()
+        components.scheme = Road.shareScheme
+        components.host = Road.shareHost
+        components.path = "/\(id)"
+        return components.url
+    }
+
+    static func roadId(from url: URL) -> String? {
+        guard url.scheme == Road.shareScheme else { return nil }
+        guard url.host == Road.shareHost else { return nil }
+
+        let trimmedPath = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        if !trimmedPath.isEmpty {
+            return trimmedPath
+        }
+
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        return components.queryItems?.first(where: { $0.name == "id" })?.value
+    }
+
     var overallRating: Double {
         // Prefer the pre-computed avgOverall from the API
         if let avgOverall = ratingSummary?.avgOverall {
