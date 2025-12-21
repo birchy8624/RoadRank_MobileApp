@@ -560,24 +560,43 @@ function Map() {
             const roadName = road.name || 'Unnamed road';
 
             return (
-              <Polyline
-                key={road.id}
-                positions={positions}
-                pathOptions={{
-                  color: getRoadColor(getRoadDisplayRating(road)),
-                  opacity: 0.8,
-                  weight: 5,
-                }}
-                eventHandlers={{
-                  click: () => {
-                    clearTooltipTimeout();
-                    setHoveredRoadId(null);
-                    handleRoadSelect({ ...road, path }, positions);
-                  },
-                  mouseover: () => keepTooltipOpen(road.id),
-                  mouseout: hideTooltipWithDelay,
-                }}
-              >
+              <React.Fragment key={road.id}>
+                {/* Invisible wider hit target for easier selection */}
+                <Polyline
+                  positions={positions}
+                  pathOptions={{
+                    color: 'transparent',
+                    weight: 25,
+                    opacity: 0,
+                  }}
+                  eventHandlers={{
+                    click: () => {
+                      clearTooltipTimeout();
+                      setHoveredRoadId(null);
+                      handleRoadSelect({ ...road, path }, positions);
+                    },
+                    mouseover: () => keepTooltipOpen(road.id),
+                    mouseout: hideTooltipWithDelay,
+                  }}
+                />
+                {/* Visible road polyline */}
+                <Polyline
+                  positions={positions}
+                  pathOptions={{
+                    color: getRoadColor(getRoadDisplayRating(road)),
+                    opacity: 0.8,
+                    weight: 5,
+                  }}
+                  eventHandlers={{
+                    click: () => {
+                      clearTooltipTimeout();
+                      setHoveredRoadId(null);
+                      handleRoadSelect({ ...road, path }, positions);
+                    },
+                    mouseover: () => keepTooltipOpen(road.id),
+                    mouseout: hideTooltipWithDelay,
+                  }}
+                >
                 {hoveredRoadId === road.id && (
                   <Tooltip
                     className="road-tooltip"
@@ -685,6 +704,7 @@ function Map() {
                   </Popup>
                 )}
               </Polyline>
+              </React.Fragment>
             );
           } catch (err) {
             console.error('Error rendering road:', road, err);
