@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
     if (req.method === 'GET') {
       const { data: ratings, error } = await supabase
         .from('road_ratings')
-        .select('id, twistiness, surface_condition, fun_factor, scenery, visibility, comment, created_at')
+        .select('id, twistiness, surface_condition, fun_factor, scenery, visibility, comment, warnings, created_at')
         .eq('road_id', roadId)
         .order('created_at', { ascending: false });
 
@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      const { twistiness, surface_condition, fun_factor, scenery, visibility, comment, device_id } = req.body;
+      const { twistiness, surface_condition, fun_factor, scenery, visibility, comment, warnings, device_id } = req.body;
 
       const validateScore = (score) => {
         const parsed = parseNumeric(score);
@@ -94,6 +94,12 @@ module.exports = async (req, res) => {
       if (![twistiness, surface_condition, fun_factor, scenery, visibility].every(validateScore)) {
         return res.status(400).json({ message: 'All rating fields must be numbers between 1 and 5.' });
       }
+
+      // Validate warnings if provided
+      const validWarnings = ['speed_camera', 'potholes', 'traffic'];
+      const sanitizedWarnings = Array.isArray(warnings)
+        ? warnings.filter(w => validWarnings.includes(w))
+        : null;
 
       const { data: inserted, error } = await supabase
         .from('road_ratings')
@@ -105,6 +111,7 @@ module.exports = async (req, res) => {
           scenery,
           visibility,
           comment,
+          warnings: sanitizedWarnings,
           device_id: device_id || null,
         }])
         .select()
