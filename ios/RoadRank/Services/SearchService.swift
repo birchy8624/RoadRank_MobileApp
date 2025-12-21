@@ -5,56 +5,11 @@ import MapKit
 actor SearchService {
     static let shared = SearchService()
 
-    private let nominatimURL = "https://nominatim.openstreetmap.org/search"
-    private let session: URLSession
-
-    private init() {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 10
-        self.session = URLSession(configuration: config)
-    }
-
-    // MARK: - Nominatim Search
+    private init() {}
 
     func search(query: String) async throws -> [LocationSearchResult] {
         guard !query.isEmpty else { return [] }
 
-        // URL encode the query
-        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            throw SearchError.invalidQuery
-        }
-
-        let urlString = "\(nominatimURL)?q=\(encodedQuery)&format=json&limit=10&addressdetails=1"
-
-        guard let url = URL(string: urlString) else {
-            throw SearchError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.setValue("RoadRank-iOS/1.0", forHTTPHeaderField: "User-Agent")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        do {
-            let (data, response) = try await session.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                throw SearchError.serverError
-            }
-
-            let results = try JSONDecoder().decode([NominatimResult].self, from: data)
-            return results.map { LocationSearchResult(nominatimResult: $0) }
-        } catch let error as SearchError {
-            throw error
-        } catch {
-            // Fallback to Apple's MapKit search
-            return try await searchWithMapKit(query: query)
-        }
-    }
-
-    // MARK: - MapKit Search (Fallback)
-
-    private func searchWithMapKit(query: String) async throws -> [LocationSearchResult] {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = query
         request.resultTypes = [.address, .pointOfInterest]
@@ -72,19 +27,10 @@ actor SearchService {
 
 // MARK: - Search Error
 enum SearchError: LocalizedError {
-    case invalidQuery
-    case invalidURL
-    case serverError
     case searchFailed(Error)
 
     var errorDescription: String? {
         switch self {
-        case .invalidQuery:
-            return "Invalid search query"
-        case .invalidURL:
-            return "Invalid search URL"
-        case .serverError:
-            return "Search server error"
         case .searchFailed(let error):
             return "Search failed: \(error.localizedDescription)"
         }

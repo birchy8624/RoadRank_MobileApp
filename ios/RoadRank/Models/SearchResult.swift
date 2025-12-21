@@ -1,48 +1,6 @@
 import Foundation
 import MapKit
 
-// MARK: - Nominatim Search Result
-struct NominatimResult: Codable, Identifiable {
-    let placeId: Int
-    let lat: String
-    let lon: String
-    let displayName: String
-    let type: String?
-    let importance: Double?
-
-    enum CodingKeys: String, CodingKey {
-        case placeId = "place_id"
-        case lat, lon
-        case displayName = "display_name"
-        case type, importance
-    }
-
-    var id: Int { placeId }
-
-    var coordinate: CLLocationCoordinate2D {
-        CLLocationCoordinate2D(
-            latitude: Double(lat) ?? 0,
-            longitude: Double(lon) ?? 0
-        )
-    }
-
-    var shortName: String {
-        let components = displayName.components(separatedBy: ", ")
-        if components.count >= 2 {
-            return "\(components[0]), \(components[1])"
-        }
-        return components.first ?? displayName
-    }
-
-    var locationDescription: String {
-        let components = displayName.components(separatedBy: ", ")
-        if components.count > 2 {
-            return components.dropFirst(2).prefix(2).joined(separator: ", ")
-        }
-        return ""
-    }
-}
-
 // MARK: - OSRM Match Response
 struct OSRMMatchResponse: Codable {
     let code: String
@@ -91,7 +49,7 @@ struct OSRMTracepoint: Codable {
     }
 }
 
-// MARK: - MKLocalSearch Extension for Fallback
+// MARK: - Location Search Result
 struct LocationSearchResult: Identifiable {
     let id: UUID
     let title: String
@@ -110,13 +68,6 @@ struct LocationSearchResult: Identifiable {
         self.title = mapItem.name ?? "Unknown Location"
         self.subtitle = mapItem.placemark.formattedAddress ?? ""
         self.coordinate = mapItem.placemark.coordinate
-    }
-
-    init(nominatimResult: NominatimResult) {
-        self.id = UUID()
-        self.title = nominatimResult.shortName
-        self.subtitle = nominatimResult.locationDescription
-        self.coordinate = nominatimResult.coordinate
     }
 }
 
