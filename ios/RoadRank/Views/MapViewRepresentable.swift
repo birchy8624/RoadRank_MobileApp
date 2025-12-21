@@ -10,6 +10,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     @Binding var selectedRoad: Road?
     @Binding var shouldCenterOnUser: Bool
     @Binding var roadToCenter: Road?
+    @Binding var searchPinLocation: CLLocationCoordinate2D?
     var userLocation: CLLocation?
     var onPathUpdate: (([Coordinate]) -> Void)?
     var onMapTap: ((CLLocationCoordinate2D) -> Void)?
@@ -81,6 +82,29 @@ struct MapViewRepresentable: UIViewRepresentable {
             }
         }
 
+        // Handle search pin location - center map and add annotation
+        if let searchLocation = searchPinLocation {
+            // Remove existing search pin annotations
+            let existingSearchPins = mapView.annotations.filter { $0 is SearchPinAnnotation }
+            mapView.removeAnnotations(existingSearchPins)
+
+            // Add new search pin annotation
+            let annotation = SearchPinAnnotation(coordinate: searchLocation)
+            mapView.addAnnotation(annotation)
+
+            // Center map on the search location with animation
+            let region = MKCoordinateRegion(
+                center: searchLocation,
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+            mapView.setRegion(region, animated: true)
+
+            // Reset the binding after processing
+            DispatchQueue.main.async {
+                self.searchPinLocation = nil
+            }
+        }
+
         // Update overlays
         mapView.removeOverlays(mapView.overlays)
 
@@ -136,9 +160,34 @@ struct MapViewRepresentable: UIViewRepresentable {
 
         private var currentDrawingPath: [Coordinate] = []
         private var isCurrentlyDrawing = false
+        private var currentZoomLevel: Double = 8.0 // Default to UK-wide view
 
         init(_ parent: MapViewRepresentable) {
             self.parent = parent
+        }
+
+        // Track zoom level changes for dynamic road tap threshold
+        func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+            // Calculate zoom level from the region span (lower span = more zoomed in)
+            currentZoomLevel = mapView.region.span.latitudeDelta
+        }
+
+        // Calculate tap threshold based on zoom level
+        // When zoomed out, we need a larger threshold to make roads easier to tap
+        private func calculateTapThreshold() -> Double {
+            // Base threshold of 30 at close zoom (0.02 span)
+            // Scales up to 200 at far zoom (8.0 span)
+            let minThreshold: Double = 30
+            let maxThreshold: Double = 200
+            let minZoom: Double = 0.005  // Very zoomed in
+            let maxZoom: Double = 2.0    // Zoomed out to see large area
+
+            let clampedZoom = min(max(currentZoomLevel, minZoom), maxZoom)
+            let normalizedZoom = (clampedZoom - minZoom) / (maxZoom - minZoom)
+
+            // Exponential scaling for better feel
+            let threshold = minThreshold + (maxThreshold - minThreshold) * pow(normalizedZoom, 0.5)
+            return threshold
         }
 
         // MARK: - Gesture Recognizers
@@ -203,13 +252,14 @@ struct MapViewRepresentable: UIViewRepresentable {
 
         private func checkForRoadTap(at point: CGPoint, in mapView: MKMapView) {
             let mapPoint = MKMapPoint(mapView.convert(point, toCoordinateFrom: mapView))
+            let threshold = calculateTapThreshold()
 
             for overlay in mapView.overlays {
                 guard let roadPolyline = overlay as? RoadPolyline,
                       let roadId = roadPolyline.roadId else { continue }
 
-                // Check if point is near the polyline
-                if isPoint(mapPoint, nearPolyline: roadPolyline, threshold: 30) {
+                // Check if point is near the polyline (threshold scales with zoom level)
+                if isPoint(mapPoint, nearPolyline: roadPolyline, threshold: threshold) {
                     if let road = roads.first(where: { $0.id == roadId }) {
                         HapticManager.shared.selection()
                         parent.selectedRoad = road
@@ -250,6 +300,34 @@ struct MapViewRepresentable: UIViewRepresentable {
         }
 
         // MARK: - Map View Delegate
+
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            // Don't customize user location annotation
+            if annotation is MKUserLocation {
+                return nil
+            }
+
+            // Handle search pin annotations
+            if let searchPin = annotation as? SearchPinAnnotation {
+                let identifier = "SearchPin"
+                var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+
+                if annotationView == nil {
+                    annotationView = MKMarkerAnnotationView(annotation: searchPin, reuseIdentifier: identifier)
+                    annotationView?.canShowCallout = false
+                } else {
+                    annotationView?.annotation = searchPin
+                }
+
+                annotationView?.markerTintColor = .systemRed
+                annotationView?.glyphImage = UIImage(systemName: "mappin")
+                annotationView?.animatesWhenAdded = true
+
+                return annotationView
+            }
+
+            return nil
+        }
 
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let roadPolyline = overlay as? RoadPolyline {
@@ -292,4 +370,15 @@ class DrawingPolyline: MKPolyline {
     var color: UIColor = .systemBlue
     var lineWidth: CGFloat = 3
     var isDashed: Bool = false
+}
+
+// MARK: - Search Pin Annotation
+
+class SearchPinAnnotation: NSObject, MKAnnotation {
+    let coordinate: CLLocationCoordinate2D
+
+    init(coordinate: CLLocationCoordinate2D) {
+        self.coordinate = coordinate
+        super.init()
+    }
 }
