@@ -37,7 +37,7 @@ struct ContentView: View {
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $appState.isShowingRatingSheet) {
             RatingSheetView(
-                road: appState.selectedRoad,
+                road: appState.roadToRate,
                 drawnPath: appState.snappedPath ?? appState.drawnPath
             )
             .presentationDetents([.large])

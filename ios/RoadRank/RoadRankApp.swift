@@ -69,6 +69,7 @@ class AppState: ObservableObject {
     @Published var selectedTab: Tab = .map
     @Published var isShowingRatingSheet: Bool = false
     @Published var selectedRoad: Road?
+    @Published var roadToRate: Road?
     @Published var isDrawingMode: Bool = false
     @Published var drawnPath: [Coordinate] = []
     @Published var snappedPath: [Coordinate]?
@@ -147,10 +148,11 @@ class AppState: ObservableObject {
     func clearDrawing() {
         drawnPath = []
         snappedPath = nil
+        roadToRate = nil
     }
 
     func prepareForRating(road: Road?) {
-        selectedRoad = road
+        roadToRate = road
         isShowingRatingSheet = true
     }
 }
