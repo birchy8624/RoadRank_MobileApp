@@ -72,7 +72,7 @@ struct MapContainerView: View {
         }
         .sheet(item: $selectedRoadForPopup) { road in
             RoadDetailSheet(road: road)
-                .presentationDetents([.medium])
+                .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
         .onChange(of: appState.selectedRoad) { _, newRoad in
@@ -331,6 +331,7 @@ struct MapContainerView: View {
 // MARK: - Road Detail Sheet
 struct RoadDetailSheet: View {
     let road: Road
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var roadStore: RoadStore
     @State private var ratings: [Rating] = []
@@ -427,7 +428,7 @@ struct RoadDetailSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
-                        // Dismiss handled by sheet
+                        dismiss()
                     }
                     .foregroundStyle(Theme.primary)
                 }
