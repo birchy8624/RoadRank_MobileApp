@@ -13,6 +13,7 @@ struct MapContainerView: View {
     @State private var selectedRoadForPopup: Road?
     @State private var showSearchSheet: Bool = false
     @State private var roadToCenter: Road?
+    @State private var searchPinLocation: CLLocationCoordinate2D?
 
     var body: some View {
         ZStack {
@@ -25,6 +26,7 @@ struct MapContainerView: View {
                 selectedRoad: $selectedRoadForPopup,
                 shouldCenterOnUser: $locationManager.shouldCenterOnUser,
                 roadToCenter: $roadToCenter,
+                searchPinLocation: $searchPinLocation,
                 userLocation: locationManager.location,
                 onPathUpdate: { newPath in
                     appState.drawnPath = newPath
@@ -58,13 +60,10 @@ struct MapContainerView: View {
             SearchSheetView(
                 searchViewModel: searchViewModel,
                 onLocationSelected: { result in
-                    withAnimation {
-                        position = .region(MKCoordinateRegion(
-                            center: result.coordinate,
-                            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
-                        ))
-                    }
+                    // Set the search pin location - this will trigger map to center and add pin
+                    searchPinLocation = result.coordinate
                     showSearchSheet = false
+                    HapticManager.shared.selection()
                 }
             )
             .presentationDetents([.medium, .large])
@@ -336,9 +335,13 @@ struct RoadDetailSheet: View {
     @EnvironmentObject var roadStore: RoadStore
     @State private var ratings: [Rating] = []
     @State private var isLoadingRatings: Bool = false
+    @State private var isCommentsExpanded: Bool = false
     private var warningSummary: [RoadWarning] {
         let warnings = ratings.compactMap(\.warnings).flatMap { $0 }
         return Array(Set(warnings)).sorted { $0.title < $1.title }
+    }
+    private var ratingsWithComments: [Rating] {
+        ratings.filter { $0.comment != nil && !$0.comment!.isEmpty }
     }
 
     var body: some View {
@@ -371,6 +374,11 @@ struct RoadDetailSheet: View {
                     }
                     .padding(.top)
 
+                    // Expandable Comments Section (above ratings)
+                    if !ratingsWithComments.isEmpty {
+                        expandableCommentsSection
+                    }
+
                     // Overall Rating
                     if road.overallRating > 0 {
                         overallRatingCard
@@ -383,11 +391,6 @@ struct RoadDetailSheet: View {
                     // Rating Categories
                     if road.ratingCount ?? 0 > 0 {
                         ratingCategoriesCard
-                    }
-
-                    // Comments
-                    if !ratings.isEmpty {
-                        commentsSection
                     }
 
                     // Add Rating Button
@@ -556,14 +559,38 @@ struct RoadDetailSheet: View {
         .padding(.horizontal)
     }
 
-    private var commentsSection: some View {
+    private var expandableCommentsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Community Comments")
-                .font(.headline)
-                .foregroundStyle(Theme.textPrimary)
+            // Header with expand/collapse button
+            Button {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isCommentsExpanded.toggle()
+                }
+                HapticManager.shared.buttonTap()
+            } label: {
+                HStack {
+                    HStack(spacing: 8) {
+                        Image(systemName: "text.bubble.fill")
+                            .foregroundStyle(Theme.primary)
+                        Text("Community Comments")
+                            .font(.headline)
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("(\(ratingsWithComments.count))")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.textMuted)
+                    }
+                    Spacer()
+                    Image(systemName: isCommentsExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.primary)
+                }
                 .padding(.horizontal)
+            }
 
-            ForEach(ratings.filter { $0.comment != nil && !$0.comment!.isEmpty }) { rating in
+            // Comments content
+            let commentsToShow = isCommentsExpanded ? ratingsWithComments : Array(ratingsWithComments.prefix(2))
+
+            ForEach(commentsToShow) { rating in
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         HStack(spacing: 3) {
@@ -583,6 +610,7 @@ struct RoadDetailSheet: View {
                     Text(rating.comment ?? "")
                         .font(.subheadline)
                         .foregroundStyle(Theme.textSecondary)
+                        .lineLimit(isCommentsExpanded ? nil : 2)
                 }
                 .padding(16)
                 .background(
@@ -591,7 +619,45 @@ struct RoadDetailSheet: View {
                 )
             }
             .padding(.horizontal)
+
+            // Show "See all" button if collapsed and there are more comments
+            if !isCommentsExpanded && ratingsWithComments.count > 2 {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        isCommentsExpanded = true
+                    }
+                    HapticManager.shared.buttonTap()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("See all \(ratingsWithComments.count) comments")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundStyle(Theme.primary)
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Theme.primary)
+                        Spacer()
+                    }
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Theme.primary.opacity(0.1))
+                    )
+                }
+                .padding(.horizontal)
+            }
         }
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Theme.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Theme.cardBorder, lineWidth: 1)
+                )
+        )
+        .padding(.horizontal)
     }
 
     private func ratingValue(for category: RatingCategory) -> Double {
