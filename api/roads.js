@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      const { path, twistiness, surface_condition, fun_factor, scenery, visibility, name, comment, device_id } = req.body;
+      const { path, twistiness, surface_condition, fun_factor, scenery, visibility, name, comment, warnings, device_id } = req.body;
 
       const { data: newRoad, error: roadError } = await supabase
         .from('roads')
@@ -104,6 +104,12 @@ module.exports = async (req, res) => {
 
       const roadId = String(newRoad.id);
 
+      // Validate warnings if provided
+      const validWarnings = ['speed_camera', 'potholes', 'traffic'];
+      const sanitizedWarnings = Array.isArray(warnings)
+        ? warnings.filter(w => validWarnings.includes(w))
+        : null;
+
       const { error: ratingError } = await supabase
         .from('road_ratings')
         .insert([{
@@ -114,6 +120,7 @@ module.exports = async (req, res) => {
           scenery,
           visibility,
           comment: comment || 'Original submission',
+          warnings: sanitizedWarnings,
         }]);
 
       if (ratingError) {

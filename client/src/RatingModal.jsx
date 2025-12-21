@@ -11,6 +11,12 @@ const ratingLabels = {
   visibility: { icon: '👁️', label: 'Visibility' },
 };
 
+const warningTypes = {
+  speed_camera: { icon: '📷', label: 'Speed Cameras' },
+  potholes: { icon: '⚠️', label: 'Potholes' },
+  traffic: { icon: '🚗', label: 'Traffic' },
+};
+
 const ratingDescriptions = [
   'Poor',
   'Fair',
@@ -41,6 +47,7 @@ function RatingModal({
   const [comment, setComment] = useState('');
   const [name, setName] = useState('');
   const [commentsExpanded, setCommentsExpanded] = useState(false);
+  const [selectedWarnings, setSelectedWarnings] = useState([]);
 
   const handleChange = (e) => {
     setRatings({ ...ratings, [e.target.name]: Number(e.target.value) });
@@ -52,7 +59,16 @@ function RatingModal({
       ...ratings,
       ...(showComment ? { comment } : {}),
       ...(isNewRoad ? { name: name.trim() || null } : {}),
+      ...(selectedWarnings.length > 0 ? { warnings: selectedWarnings } : {}),
     });
+  };
+
+  const toggleWarning = (warningKey) => {
+    setSelectedWarnings((prev) =>
+      prev.includes(warningKey)
+        ? prev.filter((w) => w !== warningKey)
+        : [...prev, warningKey]
+    );
   };
 
   const formatDate = (value) => {
@@ -76,6 +92,22 @@ function RatingModal({
 
   const hiddenCommentsCount = existingRatings.length - COMMENTS_PREVIEW_COUNT;
   const hasMoreComments = existingRatings.length > COMMENTS_PREVIEW_COUNT;
+
+  // Aggregate warnings from all ratings
+  const aggregatedWarnings = useMemo(() => {
+    const warningCounts = {};
+    existingRatings.forEach((rating) => {
+      if (rating.warnings && Array.isArray(rating.warnings)) {
+        rating.warnings.forEach((warning) => {
+          warningCounts[warning] = (warningCounts[warning] || 0) + 1;
+        });
+      }
+    });
+    return Object.entries(warningCounts)
+      .map(([key, count]) => ({ key, count, ...warningTypes[key] }))
+      .filter((w) => w.label) // Only include valid warning types
+      .sort((a, b) => b.count - a.count);
+  }, [existingRatings]);
 
   // Details view for existing roads
   if (viewMode === 'details' && !isNewRoad) {
@@ -132,6 +164,22 @@ function RatingModal({
               <p className="no-ratings-message">No ratings yet. Be the first to rate this road!</p>
             )}
           </div>
+
+          {/* Warnings Section */}
+          {aggregatedWarnings.length > 0 && (
+            <div className="details-section">
+              <h3 className="details-section-title">Warnings</h3>
+              <div className="warnings-grid">
+                {aggregatedWarnings.map((warning) => (
+                  <div key={warning.key} className="warning-badge">
+                    <span className="warning-icon">{warning.icon}</span>
+                    <span className="warning-label">{warning.label}</span>
+                    <span className="warning-count">{warning.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Comments Section */}
           <div className="details-section">
@@ -295,6 +343,23 @@ function RatingModal({
               />
             </div>
           )}
+
+          <div className="warnings-field">
+            <label>Road Warnings (optional)</label>
+            <div className="warnings-selection">
+              {Object.entries(warningTypes).map(([key, { icon, label }]) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={`warning-toggle ${selectedWarnings.includes(key) ? 'active' : ''}`}
+                  onClick={() => toggleWarning(key)}
+                >
+                  <span className="warning-icon">{icon}</span>
+                  <span className="warning-label">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="modal-actions">
             {!isNewRoad && (

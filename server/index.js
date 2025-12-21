@@ -86,7 +86,7 @@ app.get('/api/roads', async (req, res) => {
 
 app.post('/api/roads', async (req, res) => {
   try {
-    const { path, twistiness, surface_condition, fun_factor, scenery, visibility, name, comment, device_id } = req.body;
+    const { path, twistiness, surface_condition, fun_factor, scenery, visibility, name, comment, warnings, device_id } = req.body;
 
     const { data: newRoad, error: roadError } = await supabase
       .from('roads')
@@ -110,6 +110,12 @@ app.post('/api/roads', async (req, res) => {
 
     const roadId = String(newRoad.id);
 
+    // Validate warnings if provided
+    const validWarnings = ['speed_camera', 'potholes', 'traffic'];
+    const sanitizedWarnings = Array.isArray(warnings)
+      ? warnings.filter(w => validWarnings.includes(w))
+      : null;
+
     const { error: ratingError } = await supabase
       .from('road_ratings')
       .insert([{
@@ -120,6 +126,7 @@ app.post('/api/roads', async (req, res) => {
         scenery,
         visibility,
         comment: comment || 'Original submission',
+        warnings: sanitizedWarnings,
       }]);
 
     if (ratingError) {
@@ -144,7 +151,7 @@ app.get('/api/roads/:id/ratings', async (req, res) => {
 
     const { data: ratings, error } = await supabase
       .from('road_ratings')
-      .select('id, twistiness, surface_condition, fun_factor, scenery, visibility, comment, created_at')
+      .select('id, twistiness, surface_condition, fun_factor, scenery, visibility, comment, warnings, created_at')
       .eq('road_id', roadId)
       .order('created_at', { ascending: false });
 
@@ -168,7 +175,7 @@ app.get('/api/roads/:id/ratings', async (req, res) => {
 app.post('/api/roads/:id/ratings', async (req, res) => {
   try {
     const roadId = req.params.id;
-    const { twistiness, surface_condition, fun_factor, scenery, visibility, comment, device_id } = req.body;
+    const { twistiness, surface_condition, fun_factor, scenery, visibility, comment, warnings, device_id } = req.body;
 
     const validateScore = (score) => {
       const parsed = parseNumeric(score);
@@ -178,6 +185,12 @@ app.post('/api/roads/:id/ratings', async (req, res) => {
     if (![twistiness, surface_condition, fun_factor, scenery, visibility].every(validateScore)) {
       return res.status(400).json({ message: 'All rating fields must be numbers between 1 and 5.' });
     }
+
+    // Validate warnings if provided
+    const validWarnings = ['speed_camera', 'potholes', 'traffic'];
+    const sanitizedWarnings = Array.isArray(warnings)
+      ? warnings.filter(w => validWarnings.includes(w))
+      : null;
 
     const { data: inserted, error } = await supabase
       .from('road_ratings')
@@ -189,6 +202,7 @@ app.post('/api/roads/:id/ratings', async (req, res) => {
         scenery,
         visibility,
         comment,
+        warnings: sanitizedWarnings,
         device_id: device_id || null,
       }])
       .select()

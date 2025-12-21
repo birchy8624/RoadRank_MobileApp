@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS road_ratings (
     scenery INTEGER CHECK (scenery BETWEEN 1 AND 5),
     visibility INTEGER CHECK (visibility BETWEEN 1 AND 5),
     comment TEXT,
+    warnings TEXT[], -- Array of warning types: 'speed_camera', 'potholes', 'traffic'
     device_id TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
