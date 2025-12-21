@@ -3,7 +3,7 @@ import MapKit
 
 // MARK: - Nominatim Search Result
 struct NominatimResult: Codable, Identifiable {
-    let placeId: Int
+    let placeId: Int64
     let lat: String
     let lon: String
     let displayName: String
@@ -17,7 +17,7 @@ struct NominatimResult: Codable, Identifiable {
         case type, importance
     }
 
-    var id: Int { placeId }
+    var id: Int64 { placeId }
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(

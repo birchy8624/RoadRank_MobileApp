@@ -39,15 +39,16 @@ actor SearchService {
 
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
-                throw SearchError.serverError
+                // Fall back to MapKit on server error
+                return try await searchWithMapKit(query: query)
             }
 
             let results = try JSONDecoder().decode([NominatimResult].self, from: data)
             return results.map { LocationSearchResult(nominatimResult: $0) }
-        } catch let error as SearchError {
-            throw error
+        } catch is SearchError {
+            throw SearchError.searchFailed(NSError(domain: "SearchService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Both search providers failed"]))
         } catch {
-            // Fallback to Apple's MapKit search
+            // Fallback to Apple's MapKit search on any other error
             return try await searchWithMapKit(query: query)
         }
     }
