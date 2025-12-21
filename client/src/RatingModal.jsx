@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './RatingModal.css';
+
+const COMMENTS_PREVIEW_COUNT = 2;
 
 const ratingLabels = {
   twistiness: { icon: '🌀', label: 'Twistiness' },
@@ -38,6 +40,7 @@ function RatingModal({
 
   const [comment, setComment] = useState('');
   const [name, setName] = useState('');
+  const [commentsExpanded, setCommentsExpanded] = useState(false);
 
   const handleChange = (e) => {
     setRatings({ ...ratings, [e.target.name]: Number(e.target.value) });
@@ -62,6 +65,17 @@ function RatingModal({
   const summary = roadDetails?.summary;
   const existingRatings = roadDetails?.ratings || [];
   const loading = roadDetails?.loading || false;
+
+  // Calculate which comments to display based on expanded state
+  const visibleComments = useMemo(() => {
+    if (commentsExpanded || existingRatings.length <= COMMENTS_PREVIEW_COUNT) {
+      return existingRatings;
+    }
+    return existingRatings.slice(0, COMMENTS_PREVIEW_COUNT);
+  }, [existingRatings, commentsExpanded]);
+
+  const hiddenCommentsCount = existingRatings.length - COMMENTS_PREVIEW_COUNT;
+  const hasMoreComments = existingRatings.length > COMMENTS_PREVIEW_COUNT;
 
   // Details view for existing roads
   if (viewMode === 'details' && !isNewRoad) {
@@ -121,15 +135,38 @@ function RatingModal({
 
           {/* Comments Section */}
           <div className="details-section">
-            <h3 className="details-section-title">
-              Comments
-              {loading && <span className="loading-indicator">Loading...</span>}
-            </h3>
-            <div className="details-comments-list">
+            <div
+              className={`details-section-header ${hasMoreComments ? 'clickable' : ''}`}
+              onClick={hasMoreComments ? () => setCommentsExpanded(!commentsExpanded) : undefined}
+            >
+              <h3 className="details-section-title">
+                Comments
+                {existingRatings.length > 0 && (
+                  <span className="comments-count">{existingRatings.length}</span>
+                )}
+                {loading && <span className="loading-indicator">Loading...</span>}
+              </h3>
+              {hasMoreComments && (
+                <button
+                  type="button"
+                  className="expand-toggle"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCommentsExpanded(!commentsExpanded);
+                  }}
+                >
+                  {commentsExpanded ? 'Show less' : `See all ${existingRatings.length}`}
+                  <span className={`expand-icon ${commentsExpanded ? 'expanded' : ''}`}>
+                    &#9660;
+                  </span>
+                </button>
+              )}
+            </div>
+            <div className={`details-comments-list ${commentsExpanded ? 'expanded' : ''}`}>
               {!loading && existingRatings.length === 0 && (
                 <p className="no-comments-message">No comments yet. Share your experience!</p>
               )}
-              {existingRatings.map((rating) => (
+              {visibleComments.map((rating) => (
                 <div key={rating.id} className="details-comment-card">
                   <div className="details-comment-header">
                     <span className="details-comment-date">{formatDate(rating.created_at)}</span>
@@ -145,6 +182,15 @@ function RatingModal({
                   )}
                 </div>
               ))}
+              {!commentsExpanded && hasMoreComments && (
+                <button
+                  type="button"
+                  className="see-more-comments"
+                  onClick={() => setCommentsExpanded(true)}
+                >
+                  +{hiddenCommentsCount} more comment{hiddenCommentsCount !== 1 ? 's' : ''}
+                </button>
+              )}
             </div>
           </div>
 
