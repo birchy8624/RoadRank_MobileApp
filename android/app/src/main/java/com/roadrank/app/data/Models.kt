@@ -184,7 +184,7 @@ data class Rating(
     val id: String? = null,
     @SerialName("road_id")
     @Serializable(with = FlexibleIdSerializer::class)
-    val roadId: String,
+    val roadId: String? = null,  // Made nullable - GET ratings API doesn't always return this
     val twistiness: Int,
     @SerialName("surface_condition")
     val surfaceCondition: Int,
