@@ -5,10 +5,45 @@ import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.model.LatLng
 import com.roadrank.app.ui.theme.RatingCategoryColors
 import com.roadrank.app.ui.theme.RatingColor
-import com.roadrank.app.ui.theme.Theme
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.intOrNull
 import java.util.UUID
+
+/**
+ * Custom serializer to handle id as either Int or String from API
+ */
+object FlexibleIdSerializer : KSerializer<String> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("FlexibleId", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: String) {
+        encoder.encodeString(value)
+    }
+
+    override fun deserialize(decoder: Decoder): String {
+        return when (val jsonDecoder = decoder as? JsonDecoder) {
+            null -> decoder.decodeString()
+            else -> {
+                val element = jsonDecoder.decodeJsonElement()
+                when (element) {
+                    is JsonPrimitive -> {
+                        element.intOrNull?.toString() ?: element.content
+                    }
+                    else -> element.toString()
+                }
+            }
+        }
+    }
+}
 
 /**
  * Coordinate data class matching iOS
@@ -54,6 +89,7 @@ data class RatingSummary(
 @Serializable
 data class Road(
     @SerialName("id")
+    @Serializable(with = FlexibleIdSerializer::class)
     val id: String,
     val name: String? = null,
     val path: List<Coordinate>,
@@ -144,8 +180,10 @@ data class Road(
  */
 @Serializable
 data class Rating(
+    @Serializable(with = FlexibleIdSerializer::class)
     val id: String? = null,
     @SerialName("road_id")
+    @Serializable(with = FlexibleIdSerializer::class)
     val roadId: String,
     val twistiness: Int,
     @SerialName("surface_condition")
