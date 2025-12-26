@@ -281,6 +281,12 @@ fun DiscoverScreen(
                         road = road,
                         isMyRoad = road.isMyRoad(deviceId),
                         onClick = { onRoadSelected(road) },
+                        onMapClick = {
+                            // When map is clicked, navigate to map via onDrawRoadClick to switch tabs
+                            // In a real implementation we'd pass the specific road ID to center on
+                            // For now, we'll just switch to map tab
+                            onDrawRoadClick()
+                        },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -410,12 +416,12 @@ private fun RoadCard(
     road: Road,
     isMyRoad: Boolean,
     onClick: () -> Unit,
+    onMapClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Theme.BackgroundSecondary)
     ) {
@@ -425,7 +431,9 @@ private fun RoadCard(
         ) {
             // Header
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onClick), // Make header clickable
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
@@ -530,7 +538,9 @@ private fun RoadCard(
             // Rating Categories Preview
             if ((road.ratingCount ?: 0) > 0) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onClick), // Make stats clickable
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     CategoryPreview(RatingCategory.TWISTINESS, road.avgTwistiness ?: 0.0)
@@ -542,13 +552,16 @@ private fun RoadCard(
             }
 
             // Mini Map Preview
-            MiniMapView(
-                coordinates = road.coordinates,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(12.dp))
-            )
+            // Map click takes you to map tab
+            Box(modifier = Modifier.clickable(onClick = onMapClick)) {
+                MiniMapView(
+                    coordinates = road.coordinates,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            }
         }
     }
 }

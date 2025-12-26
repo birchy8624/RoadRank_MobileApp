@@ -1,30 +1,44 @@
 package com.roadrank.app.ui.screens
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.location.Address
+import android.location.Geocoder
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.compose.*
@@ -33,11 +47,17 @@ import com.roadrank.app.services.HapticManager
 import com.roadrank.app.ui.components.*
 import com.roadrank.app.ui.theme.Theme
 import com.roadrank.app.ui.theme.ratingColor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.util.Locale
 
 /**
  * Map Screen matching iOS MapContainerView
  */
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MapScreen(
     roads: List<Road>,
@@ -56,6 +76,17 @@ fun MapScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    val geocoder = remember { Geocoder(context, Locale.getDefault()) }
+
+    // Search state
+    var isSearchActive by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf<List<Address>>(emptyList()) }
+    var isSearching by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     // Location permissions
     val locationPermissions = rememberMultiplePermissionsState(
@@ -97,6 +128,31 @@ fun MapScreen(
         }
     }
 
+    // Perform search
+    fun performSearch(query: String) {
+        if (query.length < 3) return
+        
+        scope.launch {
+            isSearching = true
+            try {
+                // Run geocoding on IO thread
+                val results = withContext(Dispatchers.IO) {
+                    try {
+                        @Suppress("DEPRECATION")
+                        geocoder.getFromLocationName(query, 5) ?: emptyList()
+                    } catch (e: IOException) {
+                        emptyList()
+                    }
+                }
+                searchResults = results
+            } catch (e: Exception) {
+                searchResults = emptyList()
+            } finally {
+                isSearching = false
+            }
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         // Google Map
         GoogleMap(
@@ -110,6 +166,9 @@ fun MapScreen(
                 if (isDrawingMode) {
                     onAddPoint(Coordinate.from(latLng))
                     HapticManager.draw()
+                } else if (isSearchActive) {
+                    isSearchActive = false
+                    keyboardController?.hide()
                 }
             }
         ) {
@@ -122,8 +181,10 @@ fun MapScreen(
                         width = 8f,
                         clickable = true,
                         onClick = {
-                            onRoadSelected(road)
-                            HapticManager.buttonTap()
+                            if (!isSearchActive) {
+                                onRoadSelected(road)
+                                HapticManager.buttonTap()
+                            }
                         }
                     )
                 }
@@ -155,37 +216,102 @@ fun MapScreen(
                     )
                 }
             }
+            
+            // Search result marker
+            if (isSearchActive && searchResults.isNotEmpty()) {
+                searchResults.firstOrNull()?.let { address ->
+                     Marker(
+                        state = MarkerState(position = LatLng(address.latitude, address.longitude)),
+                        title = address.featureName ?: address.getAddressLine(0),
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                    )
+                }
+            }
         }
 
         // Overlay Controls
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Top Bar
+            // Top Bar with Search
             TopBar(
-                onSearchClick = onSearchClick,
+                isSearchActive = isSearchActive,
+                searchQuery = searchQuery,
+                onSearchQueryChange = { 
+                    searchQuery = it
+                    if (it.length > 2) performSearch(it)
+                },
+                onSearchActiveChange = { active ->
+                    isSearchActive = active
+                    if (active) {
+                        // Clear previous search when activating
+                        searchQuery = ""
+                        searchResults = emptyList()
+                    } else {
+                        keyboardController?.hide()
+                    }
+                },
+                focusRequester = focusRequester,
                 onLocationClick = {
                     if (locationPermissions.allPermissionsGranted) {
-                        // Center on user location would be implemented here
-                        HapticManager.buttonTap()
+                        scope.launch {
+                            try {
+                                @SuppressLint("MissingPermission")
+                                val location = fusedLocationClient.lastLocation.await()
+                                location?.let {
+                                    cameraPositionState.animate(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            LatLng(it.latitude, it.longitude),
+                                            15f
+                                        )
+                                    )
+                                }
+                                HapticManager.buttonTap()
+                            } catch (e: Exception) {
+                                // Handle error or ignore if location unavailable
+                            }
+                        }
                     } else {
                         locationPermissions.launchMultiplePermissionRequest()
                     }
                 }
             )
 
+            // Search Results List
+            if (isSearchActive && (searchResults.isNotEmpty() || isSearching)) {
+                SearchResultsList(
+                    results = searchResults,
+                    isSearching = isSearching,
+                    onResultClick = { address ->
+                        scope.launch {
+                            val latLng = LatLng(address.latitude, address.longitude)
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                            )
+                            // Keep search active but hide list or clear query? 
+                            // Usually we might want to close search mode or just hide list
+                            isSearchActive = false
+                            keyboardController?.hide()
+                            HapticManager.selection()
+                        }
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
-            // Bottom Controls
-            BottomControls(
-                isDrawingMode = isDrawingMode,
-                drawnPath = drawnPath,
-                onStartDrawing = onStartDrawing,
-                onStopDrawing = onStopDrawing,
-                onClearDrawing = onClearDrawing,
-                onSnapAndRate = onSnapAndRate,
-                onStartRide = onStartRide
-            )
+            // Bottom Controls (Hidden when searching)
+            if (!isSearchActive) {
+                BottomControls(
+                    isDrawingMode = isDrawingMode,
+                    drawnPath = drawnPath,
+                    onStartDrawing = onStartDrawing,
+                    onStopDrawing = onStopDrawing,
+                    onClearDrawing = onClearDrawing,
+                    onSnapAndRate = onSnapAndRate,
+                    onStartRide = onStartRide
+                )
+            }
         }
 
         // Snapping Overlay
@@ -201,7 +327,11 @@ fun MapScreen(
 
 @Composable
 private fun TopBar(
-    onSearchClick: () -> Unit,
+    isSearchActive: Boolean,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onSearchActiveChange: (Boolean) -> Unit,
+    focusRequester: FocusRequester,
     onLocationClick: () -> Unit
 ) {
     Row(
@@ -212,38 +342,164 @@ private fun TopBar(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Search Button
+        // Search Area
         Row(
             modifier = Modifier
                 .weight(1f)
+                .height(50.dp) // Fixed height to match buttons
                 .clip(RoundedCornerShape(25.dp))
                 .background(Theme.BackgroundSecondary.copy(alpha = 0.95f))
                 .border(1.dp, Theme.CardBorder, RoundedCornerShape(25.dp))
-                .clickable(onClick = onSearchClick)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                .clickable { if (!isSearchActive) onSearchActiveChange(true) }
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
                 tint = Theme.Primary,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(20.dp)
             )
-            Text(
-                text = "Search location...",
-                color = Theme.TextSecondary,
-                fontSize = 14.sp
-            )
+            
+            Spacer(modifier = Modifier.width(10.dp))
+
+            if (isSearchActive) {
+                // Active Search Field
+                BasicTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester),
+                    textStyle = LocalTextStyle.current.copy(
+                        color = Theme.TextPrimary,
+                        fontSize = 16.sp
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { /* Handled by auto-search */ }),
+                    decorationBox = { innerTextField ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (searchQuery.isEmpty()) {
+                                Text(
+                                    text = "Enter address or place...",
+                                    color = Theme.TextSecondary,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
+                )
+                
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+
+                IconButton(
+                    onClick = { onSearchActiveChange(false) },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close Search",
+                        tint = Theme.TextSecondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            } else {
+                // Inactive Search Placeholder
+                Text(
+                    text = "Search location...",
+                    color = Theme.TextSecondary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
 
-        // Location Button
-        BrandedIconButton(
-            icon = Icons.Default.MyLocation,
-            onClick = onLocationClick,
-            size = 44.dp,
-            style = IconButtonStyle.SOLID
-        )
+        // Location Button (Only show when not searching or if there's room)
+        if (!isSearchActive) {
+            BrandedIconButton(
+                icon = Icons.Default.MyLocation,
+                onClick = onLocationClick,
+                size = 50.dp, // Match height
+                style = IconButtonStyle.SOLID
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchResultsList(
+    results: List<Address>,
+    isSearching: Boolean,
+    onResultClick: (Address) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .heightIn(max = 300.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Theme.BackgroundSecondary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        if (isSearching) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Theme.Primary
+                )
+            }
+        } else if (results.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No results found",
+                    color = Theme.TextMuted,
+                    fontSize = 14.sp
+                )
+            }
+        } else {
+            LazyColumn {
+                items(results) { address ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onResultClick(address) }
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+                        Text(
+                            text = address.featureName ?: address.getAddressLine(0),
+                            color = Theme.TextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
+                        val details = (0..address.maxAddressLineIndex).joinToString(", ") { address.getAddressLine(it) }
+                        if (details.isNotEmpty() && details != address.featureName) {
+                            Text(
+                                text = details,
+                                color = Theme.TextSecondary,
+                                fontSize = 12.sp,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                    Divider(color = Theme.CardBorder)
+                }
+            }
+        }
     }
 }
 
@@ -258,7 +514,7 @@ private fun BottomControls(
     onStartRide: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(bottom = 120.dp), // Space for tab bar
+        modifier = Modifier.padding(bottom = 132.dp), // Increased padding to avoid overlap with tab bar
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Drawing Mode Card

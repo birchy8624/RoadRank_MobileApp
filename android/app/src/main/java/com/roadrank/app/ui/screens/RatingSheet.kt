@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,9 +22,11 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.*
 import com.roadrank.app.data.*
+import com.roadrank.app.services.ApiClient
 import com.roadrank.app.services.HapticManager
 import com.roadrank.app.ui.components.*
 import com.roadrank.app.ui.theme.Theme
+import kotlinx.coroutines.launch
 
 /**
  * Rating Sheet matching iOS RatingSheetView
@@ -57,6 +58,27 @@ fun RatingSheet(
     var visibility by remember { mutableIntStateOf(3) }
     var selectedWarnings by remember { mutableStateOf(setOf<RoadWarning>()) }
     var comment by remember { mutableStateOf("") }
+
+    // Fetch ratings if it's an existing road
+    var roadRatings by remember { mutableStateOf<List<Rating>>(emptyList()) }
+    var isLoadingRatings by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(road) {
+        if (road != null) {
+            isLoadingRatings = true
+            scope.launch {
+                ApiClient.fetchRatings(road.id)
+                    .onSuccess { ratings ->
+                        roadRatings = ratings
+                    }
+                    .onFailure {
+                        // Handle failure silently or show error
+                    }
+                isLoadingRatings = false
+            }
+        }
+    }
 
     val isValid = if (isNewRoad) {
         roadName.trim().isNotEmpty() && drawnPath.size >= 2
@@ -111,63 +133,250 @@ fun RatingSheet(
                 )
             }
 
-            // Rating Section
-            RatingSection(
-                twistiness = twistiness,
-                onTwistinessChange = { twistiness = it },
-                surfaceCondition = surfaceCondition,
-                onSurfaceConditionChange = { surfaceCondition = it },
-                funFactor = funFactor,
-                onFunFactorChange = { funFactor = it },
-                scenery = scenery,
-                onSceneryChange = { scenery = it },
-                visibility = visibility,
-                onVisibilityChange = { visibility = it }
-            )
+            var isRatingMode by remember { mutableStateOf(isNewRoad) }
 
-            // Warnings Section
-            WarningsSection(
-                selectedWarnings = selectedWarnings,
-                onToggleWarning = { warning ->
-                    selectedWarnings = if (selectedWarnings.contains(warning)) {
-                        selectedWarnings - warning
-                    } else {
-                        selectedWarnings + warning
+            if (!isRatingMode && road != null) {
+                // VIEW MODE
+                
+                // Average Ratings Display
+                AverageRatingsSection(road)
+
+                // Comments List
+                CommentsListSection(roadRatings, isLoadingRatings)
+
+                // Button to switch to Rating Mode
+                BrandedFullWidthButton(
+                    text = "Rate this Road",
+                    icon = Icons.Default.Star,
+                    style = ButtonStyle.PRIMARY,
+                    onClick = { 
+                        isRatingMode = true 
+                        HapticManager.selection()
                     }
-                    HapticManager.selection()
-                }
-            )
+                )
+            } else {
+                // RATING / CREATE MODE
+                
+                // Rating Sliders
+                RatingSection(
+                    twistiness = twistiness,
+                    onTwistinessChange = { twistiness = it },
+                    surfaceCondition = surfaceCondition,
+                    onSurfaceConditionChange = { surfaceCondition = it },
+                    funFactor = funFactor,
+                    onFunFactorChange = { funFactor = it },
+                    scenery = scenery,
+                    onSceneryChange = { scenery = it },
+                    visibility = visibility,
+                    onVisibilityChange = { visibility = it }
+                )
 
-            // Comment Section
-            CommentSection(
-                comment = comment,
-                onCommentChange = { comment = it }
-            )
+                // Warnings Section
+                WarningsSection(
+                    selectedWarnings = selectedWarnings,
+                    onToggleWarning = { warning ->
+                        selectedWarnings = if (selectedWarnings.contains(warning)) {
+                            selectedWarnings - warning
+                        } else {
+                            selectedWarnings + warning
+                        }
+                        HapticManager.selection()
+                    }
+                )
 
-            // Submit Button
-            BrandedFullWidthButton(
-                text = if (isNewRoad) "Create Road" else "Submit Rating",
-                icon = if (isNewRoad) Icons.Default.Add else Icons.Default.Star,
-                style = if (isValid) ButtonStyle.PRIMARY else ButtonStyle.SECONDARY,
-                isLoading = isLoading,
-                enabled = isValid && !isLoading,
-                onClick = {
-                    HapticManager.impact(HapticManager.ImpactStyle.MEDIUM)
-                    onSubmit(
-                        if (isNewRoad) roadName else null,
-                        twistiness,
-                        surfaceCondition,
-                        funFactor,
-                        scenery,
-                        visibility,
-                        selectedWarnings.toList(),
-                        comment
-                    )
-                }
-            )
+                // Comment Input
+                CommentSection(
+                    comment = comment,
+                    onCommentChange = { comment = it }
+                )
+
+                // Submit Button
+                BrandedFullWidthButton(
+                    text = if (isNewRoad) "Create Road" else "Submit Rating",
+                    icon = if (isNewRoad) Icons.Default.Add else Icons.Default.Star,
+                    style = if (isValid) ButtonStyle.PRIMARY else ButtonStyle.SECONDARY,
+                    isLoading = isLoading,
+                    enabled = isValid && !isLoading,
+                    onClick = {
+                        HapticManager.impact(HapticManager.ImpactStyle.MEDIUM)
+                        onSubmit(
+                            if (isNewRoad) roadName else null,
+                            twistiness,
+                            surfaceCondition,
+                            funFactor,
+                            scenery,
+                            visibility,
+                            selectedWarnings.toList(),
+                            comment
+                        )
+                    }
+                )
+            }
         }
     }
 }
+
+@Composable
+private fun AverageRatingsSection(road: Road) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Theme.BackgroundSecondary)
+            .border(1.dp, Theme.CardBorder, RoundedCornerShape(20.dp))
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.ShowChart,
+                contentDescription = null,
+                tint = Theme.Primary,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = "Average Ratings",
+                color = Theme.TextPrimary,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp
+            )
+        }
+
+        // Display average values (readonly)
+        RatingDisplayRow(RatingCategory.TWISTINESS, road.avgTwistiness ?: 0.0)
+        RatingDisplayRow(RatingCategory.SURFACE_CONDITION, road.avgSurfaceCondition ?: 0.0)
+        RatingDisplayRow(RatingCategory.FUN_FACTOR, road.avgFunFactor ?: 0.0)
+        RatingDisplayRow(RatingCategory.SCENERY, road.avgScenery ?: 0.0)
+        RatingDisplayRow(RatingCategory.VISIBILITY, road.avgVisibility ?: 0.0)
+    }
+}
+
+@Composable
+private fun RatingDisplayRow(category: RatingCategory, value: Double) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            RatingCategoryIcon(category = category, size = 16)
+            Text(
+                text = category.title,
+                color = Theme.TextSecondary,
+                fontSize = 14.sp
+            )
+        }
+        Text(
+            text = String.format("%.1f", value),
+            color = Theme.TextPrimary,
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+private fun CommentsListSection(ratings: List<Rating>, isLoading: Boolean) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Theme.BackgroundSecondary)
+            .border(1.dp, Theme.CardBorder, RoundedCornerShape(20.dp))
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Comment,
+                contentDescription = null,
+                tint = Theme.Secondary,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = "Comments",
+                color = Theme.TextPrimary,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp
+            )
+        }
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Theme.Primary
+                )
+            }
+        } else {
+            val comments = ratings.filter { !it.comment.isNullOrBlank() }
+            
+            if (comments.isEmpty()) {
+                 Text(
+                    text = "No comments yet. Be the first to review!",
+                    color = Theme.TextMuted,
+                    fontSize = 14.sp,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            } else {
+                 comments.forEachIndexed { index, rating ->
+                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                         Row(
+                             modifier = Modifier.fillMaxWidth(),
+                             horizontalArrangement = Arrangement.SpaceBetween,
+                             verticalAlignment = Alignment.Top
+                         ) {
+                             // Star rating for this comment
+                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                 repeat(5) { starIndex ->
+                                     Icon(
+                                         imageVector = if (starIndex < rating.overallRating.toInt()) Icons.Default.Star else Icons.Default.StarBorder,
+                                         contentDescription = null,
+                                         tint = if (starIndex < rating.overallRating.toInt()) Theme.Warning else Theme.TextMuted.copy(alpha = 0.3f),
+                                         modifier = Modifier.size(12.dp)
+                                     )
+                                 }
+                             }
+                             
+                             // Date (if available) - Assuming createdAt is a string
+                             rating.createdAt?.let { dateStr ->
+                                 // Simple date format or just show string
+                                 // Ideally parse ISO string to readable date
+                                 Text(
+                                     text = dateStr.take(10), // Simple truncation for now
+                                     color = Theme.TextMuted,
+                                     fontSize = 10.sp
+                                 )
+                             }
+                         }
+                         
+                         Text(
+                             text = rating.comment ?: "",
+                             color = Theme.TextPrimary,
+                             fontSize = 14.sp
+                         )
+                     }
+                     
+                     if (index < comments.size - 1) {
+                         Divider(color = Theme.CardBorder, modifier = Modifier.padding(vertical = 8.dp))
+                     }
+                 }
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun MiniMapPreview(drawnPath: List<Coordinate>) {

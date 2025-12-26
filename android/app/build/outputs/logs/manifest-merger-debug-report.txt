@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:2:1-52:12
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:2:1-52:12
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:2:1-52:12
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:2:1-52:12
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:2:1-52:12
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:2:1-52:12
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:2:1-52:12
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:2:1-52:12
 MERGED from [com.google.maps.android:maps-compose:4.3.0] /Users/tombirch/.gradle/caches/transforms-4/1f68c142441da6577e8339625398e9a3/transformed/maps-compose-4.3.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.accompanist:accompanist-systemuicontroller:0.32.0] /Users/tombirch/.gradle/caches/transforms-4/846b5485c49e6e5e7f78afc8509986d1/transformed/accompanist-systemuicontroller-0.32.0/AndroidManifest.xml:17:1-23:12
 MERGED from [com.google.maps.android:maps-ktx:5.0.0] /Users/tombirch/.gradle/caches/transforms-4/d13aea1b8e9ee383e84c88cca6336a74/transformed/maps-ktx-5.0.0/AndroidManifest.xml:18:1-23:12
@@ -99,54 +99,54 @@ MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/
 MERGED from [androidx.print:print:1.0.0] /Users/tombirch/.gradle/caches/transforms-4/d346be7a8171f91a60fc0e82e5fac827/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/tombirch/.gradle/caches/transforms-4/cce1e9533f913f7fa8f02592cf64f101/transformed/exifinterface-1.3.6/AndroidManifest.xml:17:1-24:12
 	package
-		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 	xmlns:tools
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:3:5-51
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:3:5-51
 	android:versionCode
-		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:2:11-69
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.INTERNET
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:6:5-67
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:6:5-67
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:24:5-67
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:24:5-67
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:6:22-64
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:6:22-64
 uses-permission#android.permission.ACCESS_FINE_LOCATION
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:7:5-79
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:7:5-79
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:7:22-76
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:7:22-76
 uses-permission#android.permission.ACCESS_COARSE_LOCATION
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:8:5-81
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:8:5-81
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:8:22-78
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:8:22-78
 uses-permission#android.permission.ACCESS_BACKGROUND_LOCATION
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:9:5-85
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:9:5-85
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:9:22-82
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:9:22-82
 uses-permission#android.permission.VIBRATE
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:10:5-66
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:10:5-66
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:10:22-63
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:10:22-63
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:11:5-79
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:11:5-79
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:23:5-79
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:23:5-79
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:11:22-76
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:11:22-76
 uses-permission#android.permission.FOREGROUND_SERVICE
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:12:5-77
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:12:5-77
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:12:22-74
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:12:22-74
 uses-permission#android.permission.FOREGROUND_SERVICE_LOCATION
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:13:5-86
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:13:5-86
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:13:22-83
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:13:22-83
 application
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:15:5-50:19
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:15:5-50:19
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:15:5-50:19
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:15:5-50:19
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:36:5-42:19
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:36:5-42:19
 MERGED from [com.google.android.gms:play-services-location:21.0.1] /Users/tombirch/.gradle/caches/transforms-4/64923b032b444e16084344fd95cbb44d/transformed/play-services-location-21.0.1/AndroidManifest.xml:7:5-20
@@ -174,79 +174,79 @@ MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.
 MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/tombirch/.gradle/caches/transforms-4/124a4ad9239e5d5b06e7c23c31357dcc/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
 MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/tombirch/.gradle/caches/transforms-4/124a4ad9239e5d5b06e7c23c31357dcc/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
 	android:extractNativeLibs
-		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-4/13e04049a48655edb22af4c2dd4a40e8/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:23:9-35
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:23:9-35
 	android:label
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:21:9-41
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:21:9-41
 	android:fullBackupContent
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:19:9-54
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:19:9-54
 	android:roundIcon
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:22:9-54
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:22:9-54
 	tools:targetApi
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:25:9-29
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:25:9-29
 	android:icon
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:20:9-43
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:20:9-43
 	android:allowBackup
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:17:9-35
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:17:9-35
 	android:theme
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:24:9-46
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:24:9-46
 	android:dataExtractionRules
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:18:9-65
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:18:9-65
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:16:9-44
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:16:9-44
 meta-data#com.google.android.geo.API_KEY
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:28:9-30:71
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:28:9-30:71
 	android:value
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:30:13-68
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:30:13-68
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:29:13-58
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:29:13-58
 activity#com.roadrank.app.MainActivity
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:32:9-49:20
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:32:9-49:20
 	android:windowSoftInputMode
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:36:13-55
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:36:13-55
 	android:exported
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:34:13-36
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:34:13-36
 	android:theme
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:35:13-50
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:35:13-50
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:33:13-41
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:33:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:37:13-40:29
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:37:13-40:29
 action#android.intent.action.MAIN
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:38:17-69
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:38:17-69
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:38:25-66
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:38:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:39:17-77
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:39:17-77
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:39:27-74
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:39:27-74
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:road+data:scheme:roadrank
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:43:13-48:29
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:43:13-48:29
 action#android.intent.action.VIEW
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:44:17-69
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:44:17-69
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:44:25-66
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:44:25-66
 category#android.intent.category.DEFAULT
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:45:17-76
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:45:17-76
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:45:27-73
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:45:27-73
 category#android.intent.category.BROWSABLE
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:46:17-78
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:46:17-78
 	android:name
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:46:27-75
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:46:27-75
 data
-ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:47:17-71
+ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:47:17-71
 	android:host
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:47:49-68
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:47:49-68
 	android:scheme
-		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:47:23-48
+		ADDED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml:47:23-48
 uses-sdk
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
-INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
+INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 MERGED from [com.google.maps.android:maps-compose:4.3.0] /Users/tombirch/.gradle/caches/transforms-4/1f68c142441da6577e8339625398e9a3/transformed/maps-compose-4.3.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.maps.android:maps-compose:4.3.0] /Users/tombirch/.gradle/caches/transforms-4/1f68c142441da6577e8339625398e9a3/transformed/maps-compose-4.3.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.accompanist:accompanist-systemuicontroller:0.32.0] /Users/tombirch/.gradle/caches/transforms-4/846b5485c49e6e5e7f78afc8509986d1/transformed/accompanist-systemuicontroller-0.32.0/AndroidManifest.xml:21:5-44
@@ -436,9 +436,9 @@ MERGED from [androidx.print:print:1.0.0] /Users/tombirch/.gradle/caches/transfor
 MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/tombirch/.gradle/caches/transforms-4/cce1e9533f913f7fa8f02592cf64f101/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/tombirch/.gradle/caches/transforms-4/cce1e9533f913f7fa8f02592cf64f101/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
 	android:targetSdkVersion
-		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/tombirch/Documents/RoadRank_MobileApp/android/app/src/main/AndroidManifest.xml
 uses-feature#0x00020000
 ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-4/26bc8c668eef8b6a32bf55980d92b7e1/transformed/play-services-maps-18.2.0/AndroidManifest.xml:26:5-28:35
 	android:glEsVersion
