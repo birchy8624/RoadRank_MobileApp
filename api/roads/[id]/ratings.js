@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
     if (req.method === 'GET') {
       const { data: ratings, error } = await supabase
         .from('road_ratings')
-        .select('id, twistiness, surface_condition, fun_factor, scenery, visibility, comment, warnings, created_at')
+        .select('id, road_id, twistiness, surface_condition, fun_factor, scenery, visibility, comment, warnings, created_at')
         .eq('road_id', roadId)
         .order('created_at', { ascending: false });
 

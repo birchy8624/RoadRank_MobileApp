@@ -62,24 +62,24 @@ object ApiClient {
     )
 
     suspend fun fetchRoads(): Result<List<Road>> = runCatching {
-        client.get("$BASE_URL/api/roads").body()
+        client.get("$BASE_URL/api/roads").body<List<Road>>()
     }
 
     suspend fun createRoad(input: NewRoadInput): Result<Road> = runCatching {
         client.post("$BASE_URL/api/roads") {
             setBody(input.toPayload())
-        }.body()
+        }.body<Road>()
     }
 
     suspend fun fetchRatings(roadId: String): Result<List<Rating>> = runCatching {
-        val response: RatingsResponse = client.get("$BASE_URL/api/roads/$roadId/ratings").body()
+        val response = client.get("$BASE_URL/api/roads/$roadId/ratings").body<RatingsResponse>()
         response.ratings
     }
 
     suspend fun submitRating(input: NewRatingInput): Result<Rating> = runCatching {
-        val response: RatingResponse = client.post("$BASE_URL/api/roads/${input.roadId}/ratings") {
+        val response = client.post("$BASE_URL/api/roads/${input.roadId}/ratings") {
             setBody(input.toPayload())
-        }.body()
+        }.body<RatingResponse>()
         response.rating
     }
 }
