@@ -153,6 +153,11 @@ fun MapScreen(
         }
     }
 
+    // Use rememberUpdatedState to ensure the content lambda always has the latest values
+    val currentDrawnPath by rememberUpdatedState(drawnPath)
+    val currentSnappedPath by rememberUpdatedState(snappedPath)
+    val currentIsDrawingMode by rememberUpdatedState(isDrawingMode)
+
     Box(modifier = modifier.fillMaxSize()) {
         // Google Map
         GoogleMap(
@@ -163,7 +168,7 @@ fun MapScreen(
             ),
             uiSettings = uiSettings,
             onMapClick = { latLng ->
-                if (isDrawingMode) {
+                if (currentIsDrawingMode) {
                     onAddPoint(Coordinate.from(latLng))
                     HapticManager.draw()
                 } else if (isSearchActive) {
@@ -190,27 +195,29 @@ fun MapScreen(
                 }
             }
 
-            // Render drawn path
-            val pathToRender = snappedPath ?: drawnPath
-            if (pathToRender.isNotEmpty()) {
+            // Render drawn path - use currentDrawnPath/currentSnappedPath for proper state updates
+            val pathToRender = currentSnappedPath ?: currentDrawnPath
+            val pathPoints = pathToRender.map { it.latLng }
+
+            if (pathPoints.isNotEmpty()) {
                 Polyline(
-                    points = pathToRender.map { it.latLng },
+                    points = pathPoints,
                     color = Theme.Primary,
                     width = 10f,
-                    pattern = if (snappedPath == null) listOf(Dot(), Gap(10f)) else null
+                    pattern = if (currentSnappedPath == null) listOf(Dot(), Gap(10f)) else null
                 )
 
                 // Start marker
                 Marker(
-                    state = MarkerState(position = pathToRender.first().latLng),
+                    state = MarkerState(position = pathPoints.first()),
                     title = "Start",
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
                 )
 
                 // End marker
-                if (pathToRender.size > 1) {
+                if (pathPoints.size > 1) {
                     Marker(
-                        state = MarkerState(position = pathToRender.last().latLng),
+                        state = MarkerState(position = pathPoints.last()),
                         title = "End",
                         icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
                     )
