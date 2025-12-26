@@ -492,7 +492,7 @@ private fun SnappingOverlay() {
                     modifier = Modifier.size(60.dp),
                     color = Theme.Primary,
                     strokeWidth = 4.dp,
-                    progress = { 0.7f }
+                    progress = 0.7f
                 )
             }
 

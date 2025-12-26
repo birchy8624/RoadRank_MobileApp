@@ -10,6 +10,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Landscape
+import androidx.compose.material.icons.filled.LinearScale
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -104,11 +110,11 @@ fun RatingCategoryIcon(
     size: Int = 28
 ) {
     val icon = when (category) {
-        RatingCategory.TWISTINESS -> androidx.compose.material.icons.Icons.Default.SwapHoriz
-        RatingCategory.SURFACE_CONDITION -> androidx.compose.material.icons.Icons.Default.LinearScale
-        RatingCategory.FUN_FACTOR -> androidx.compose.material.icons.Icons.Default.Bolt
-        RatingCategory.SCENERY -> androidx.compose.material.icons.Icons.Default.Landscape
-        RatingCategory.VISIBILITY -> androidx.compose.material.icons.Icons.Default.Visibility
+        RatingCategory.TWISTINESS -> Icons.Default.SwapHoriz
+        RatingCategory.SURFACE_CONDITION -> Icons.Default.LinearScale
+        RatingCategory.FUN_FACTOR -> Icons.Default.Bolt
+        RatingCategory.SCENERY -> Icons.Default.Landscape
+        RatingCategory.VISIBILITY -> Icons.Default.Visibility
     }
 
     Icon(

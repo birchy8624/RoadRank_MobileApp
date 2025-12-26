@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.roadrank.app-mergeDebugResources-61:/values-night-v8/values-night-v8.xml",
+            "map": [
+                {
+                    "source": "/Users/tombirch/.gradle/caches/transforms-4/ec806a39d7bd96cc6f416760267c5017/transformed/core-splashscreen-1.0.1/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "85",
+                        "endOffsets": "136"
+                    }
+                }
+            ]
+        }
+    ]
+}

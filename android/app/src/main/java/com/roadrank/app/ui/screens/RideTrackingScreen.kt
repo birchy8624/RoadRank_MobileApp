@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -28,6 +29,7 @@ import com.roadrank.app.data.RideState
 import com.roadrank.app.services.HapticManager
 import com.roadrank.app.ui.components.*
 import com.roadrank.app.ui.theme.Theme
+import androidx.compose.foundation.clickable
 
 /**
  * Ride Tracking Screen matching iOS RideTrackingView
@@ -531,10 +533,4 @@ private fun formatElapsedTime(elapsedTimeMs: Long): String {
     } else {
         String.format("%02d:%02d", minutes, secs)
     }
-}
-
-private fun androidx.compose.ui.Modifier.clickable(onClick: () -> Unit): Modifier {
-    return this.then(
-        androidx.compose.foundation.clickable(onClick = onClick)
-    )
 }

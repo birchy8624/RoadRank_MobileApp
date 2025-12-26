@@ -285,7 +285,7 @@ private fun MenuSection(
             color = Theme.TextMuted,
             onClick = onSettingsClick
         )
-        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
+        Divider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
 
         MenuRow(
             icon = Icons.Default.LocationOn,
@@ -293,7 +293,7 @@ private fun MenuSection(
             color = Theme.Primary,
             onClick = onLocationClick
         )
-        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
+        Divider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
 
         MenuRow(
             icon = Icons.Default.Star,
@@ -301,7 +301,7 @@ private fun MenuSection(
             color = Color(0xFFEAB308),
             onClick = onRateAppClick
         )
-        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
+        Divider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
 
         MenuRow(
             icon = Icons.Default.Share,
@@ -309,7 +309,7 @@ private fun MenuSection(
             color = Theme.Success,
             onClick = onShareAppClick
         )
-        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
+        Divider(modifier = Modifier.padding(start = 56.dp), color = Theme.Surface)
 
         MenuRow(
             icon = Icons.Default.Info,

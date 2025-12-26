@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -212,6 +214,7 @@ fun SplashScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             // App name
+            @OptIn(ExperimentalTextApi::class)
             Column(
                 modifier = Modifier.alpha(logoOpacity),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -221,8 +224,10 @@ fun SplashScreen(
                     text = "RoadRank",
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.White, Theme.TextSecondary)
+                    style = TextStyle(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color.White, Theme.TextSecondary)
+                        )
                     )
                 )
                 Text(

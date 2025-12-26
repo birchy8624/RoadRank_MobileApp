@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.roadrank.app-mergeDebugResources-61:/values-v29/values-v29.xml",
+            "map": [
+                {
+                    "source": "/Users/tombirch/.gradle/caches/transforms-4/53af358c4d65ecb7187154356c01cf66/transformed/core-splashscreen-1.0.1/res/values-v29/values-v29.xml",
+                    "from": {
+                        "startLines": "2,7",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,374",
+                        "endLines": "6,8",
+                        "endColumns": "12,12",
+                        "endOffsets": "369,464"
+                    }
+                }
+            ]
+        }
+    ]
+}

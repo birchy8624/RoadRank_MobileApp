@@ -15,6 +15,9 @@ import com.roadrank.app.ui.screens.RoadRankApp
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        installSplashScreen()
+        
         enableEdgeToEdge()
 
         setContent {

@@ -1,6 +1,7 @@
 package com.roadrank.app.ui.screens
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,6 +67,7 @@ private val onboardingPages = listOf(
 /**
  * Onboarding Screen matching iOS exactly
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(
     onOnboardingComplete: () -> Unit
@@ -221,6 +225,7 @@ fun OnboardingScreen(
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 private fun OnboardingPageView(
     page: OnboardingPage,
@@ -329,7 +334,9 @@ private fun OnboardingPageView(
                 text = page.highlight,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                brush = Theme.PrimaryGradient
+                style = TextStyle(
+                    brush = Theme.PrimaryGradient
+                )
             )
         }
     }

@@ -1,0 +1,244 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.roadrank.app"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Permissions -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:6:5-67
+12-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:6:22-64
+13    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+13-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:7:5-79
+13-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:7:22-76
+14    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+14-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:8:5-81
+14-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:8:22-78
+15    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+15-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:9:5-85
+15-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:9:22-82
+16    <uses-permission android:name="android.permission.VIBRATE" />
+16-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:10:5-66
+16-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:10:22-63
+17    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+17-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:11:5-79
+17-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:11:22-76
+18    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+18-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:12:5-77
+18-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:12:22-74
+19    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+19-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:13:5-86
+19-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:13:22-83
+20
+21    <uses-feature
+21-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:26:5-28:35
+22        android:glEsVersion="0x00020000"
+22-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:27:9-41
+23        android:required="true" />
+23-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:28:9-32
+24
+25    <queries>
+25-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:30:5-34:15
+26
+27        <!-- Needs to be explicitly declared on Android R+ -->
+28        <package android:name="com.google.android.apps.maps" />
+28-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:33:9-64
+28-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:33:18-61
+29    </queries>
+30
+31    <permission
+31-->[androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-3/d43cd58b7c6bb24c7fdc014f36962b3e/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+32        android:name="com.roadrank.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+32-->[androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-3/d43cd58b7c6bb24c7fdc014f36962b3e/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+33        android:protectionLevel="signature" />
+33-->[androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-3/d43cd58b7c6bb24c7fdc014f36962b3e/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+34
+35    <uses-permission android:name="com.roadrank.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+35-->[androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-3/d43cd58b7c6bb24c7fdc014f36962b3e/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+35-->[androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-3/d43cd58b7c6bb24c7fdc014f36962b3e/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+36
+37    <application
+37-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:15:5-50:19
+38        android:name="com.roadrank.app.RoadRankApplication"
+38-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:16:9-44
+39        android:allowBackup="true"
+39-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:17:9-35
+40        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+40-->[androidx.core:core:1.12.0] /Users/tombirch/.gradle/caches/transforms-3/d43cd58b7c6bb24c7fdc014f36962b3e/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+41        android:dataExtractionRules="@xml/data_extraction_rules"
+41-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:18:9-65
+42        android:debuggable="true"
+43        android:extractNativeLibs="false"
+44        android:fullBackupContent="@xml/backup_rules"
+44-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:19:9-54
+45        android:icon="@mipmap/ic_launcher"
+45-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:20:9-43
+46        android:label="@string/app_name"
+46-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:21:9-41
+47        android:roundIcon="@mipmap/ic_launcher_round"
+47-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:22:9-54
+48        android:supportsRtl="true"
+48-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:23:9-35
+49        android:testOnly="true"
+50        android:theme="@style/Theme.RoadRank" >
+50-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:24:9-46
+51
+52        <!-- Google Maps API Key -->
+53        <meta-data
+53-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:28:9-30:71
+54            android:name="com.google.android.geo.API_KEY"
+54-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:29:13-58
+55            android:value="AIzaSyASieG0M9Nl0aCA-fSBAP29TDxKG9rTh08" />
+55-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:30:13-68
+56
+57        <activity
+57-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:32:9-49:20
+58            android:name="com.roadrank.app.MainActivity"
+58-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:33:13-41
+59            android:exported="true"
+59-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:34:13-36
+60            android:theme="@style/Theme.RoadRank"
+60-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:35:13-50
+61            android:windowSoftInputMode="adjustResize" >
+61-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:36:13-55
+62            <intent-filter>
+62-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:37:13-40:29
+63                <action android:name="android.intent.action.MAIN" />
+63-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:38:17-69
+63-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:38:25-66
+64
+65                <category android:name="android.intent.category.LAUNCHER" />
+65-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:39:17-77
+65-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:39:27-74
+66            </intent-filter>
+67
+68            <!-- Deep linking for sharing roads -->
+69            <intent-filter>
+69-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:43:13-48:29
+70                <action android:name="android.intent.action.VIEW" />
+70-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:44:17-69
+70-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:44:25-66
+71
+72                <category android:name="android.intent.category.DEFAULT" />
+72-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:45:17-76
+72-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:45:27-73
+73                <category android:name="android.intent.category.BROWSABLE" />
+73-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:46:17-78
+73-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:46:27-75
+74
+75                <data
+75-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:47:17-71
+76                    android:host="road"
+76-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:47:49-68
+77                    android:scheme="roadrank" />
+77-->/Users/tombirch/Documents/RoadRank_MobileApp_NEW/android/app/src/main/AndroidManifest.xml:47:23-48
+78            </intent-filter>
+79        </activity>
+80        <!-- Needs to be explicitly declared on P+ -->
+81        <uses-library
+81-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:39:9-41:40
+82            android:name="org.apache.http.legacy"
+82-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:40:13-50
+83            android:required="false" />
+83-->[com.google.android.gms:play-services-maps:18.2.0] /Users/tombirch/.gradle/caches/transforms-3/cca731e3e0e53523b6009ac5b86b22bd/transformed/play-services-maps-18.2.0/AndroidManifest.xml:41:13-37
+84
+85        <activity
+85-->[com.google.android.gms:play-services-base:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/7edad6ba31275a8db85fe89b23ad3154/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+86            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+86-->[com.google.android.gms:play-services-base:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/7edad6ba31275a8db85fe89b23ad3154/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+87            android:exported="false"
+87-->[com.google.android.gms:play-services-base:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/7edad6ba31275a8db85fe89b23ad3154/transformed/play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+88            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+88-->[com.google.android.gms:play-services-base:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/7edad6ba31275a8db85fe89b23ad3154/transformed/play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+89        <activity
+89-->[androidx.compose.ui:ui-tooling-android:1.5.4] /Users/tombirch/.gradle/caches/transforms-3/b1b5197d729c8e269b9209f78d7b184a/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+90            android:name="androidx.compose.ui.tooling.PreviewActivity"
+90-->[androidx.compose.ui:ui-tooling-android:1.5.4] /Users/tombirch/.gradle/caches/transforms-3/b1b5197d729c8e269b9209f78d7b184a/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+91            android:exported="true" />
+91-->[androidx.compose.ui:ui-tooling-android:1.5.4] /Users/tombirch/.gradle/caches/transforms-3/b1b5197d729c8e269b9209f78d7b184a/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+92        <activity
+92-->[androidx.compose.ui:ui-test-manifest:1.5.4] /Users/tombirch/.gradle/caches/transforms-3/c459fc1a5905080869bb95dd56f7142b/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:23:9-25:39
+93            android:name="androidx.activity.ComponentActivity"
+93-->[androidx.compose.ui:ui-test-manifest:1.5.4] /Users/tombirch/.gradle/caches/transforms-3/c459fc1a5905080869bb95dd56f7142b/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:24:13-63
+94            android:exported="true" />
+94-->[androidx.compose.ui:ui-test-manifest:1.5.4] /Users/tombirch/.gradle/caches/transforms-3/c459fc1a5905080869bb95dd56f7142b/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:25:13-36
+95
+96        <provider
+96-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+97            android:name="androidx.startup.InitializationProvider"
+97-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
+98            android:authorities="com.roadrank.app.androidx-startup"
+98-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
+99            android:exported="false" >
+99-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
+100            <meta-data
+100-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+101                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+101-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+102                android:value="androidx.startup" />
+102-->[androidx.emoji2:emoji2:1.4.0] /Users/tombirch/.gradle/caches/transforms-3/fe9ec1938313a0991235e091e692024e/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+103            <meta-data
+103-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/tombirch/.gradle/caches/transforms-3/dc57461efe5c140dc9145288d72c7966/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+104                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+104-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/tombirch/.gradle/caches/transforms-3/dc57461efe5c140dc9145288d72c7966/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+105                android:value="androidx.startup" />
+105-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/tombirch/.gradle/caches/transforms-3/dc57461efe5c140dc9145288d72c7966/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+106            <meta-data
+106-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+107                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+107-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+108                android:value="androidx.startup" />
+108-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+109        </provider>
+110
+111        <meta-data
+111-->[com.google.android.gms:play-services-basement:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/87a504d7c00b67415678274eaf3a17af/transformed/play-services-basement-18.1.0/AndroidManifest.xml:21:9-23:69
+112            android:name="com.google.android.gms.version"
+112-->[com.google.android.gms:play-services-basement:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/87a504d7c00b67415678274eaf3a17af/transformed/play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
+113            android:value="@integer/google_play_services_version" />
+113-->[com.google.android.gms:play-services-basement:18.1.0] /Users/tombirch/.gradle/caches/transforms-3/87a504d7c00b67415678274eaf3a17af/transformed/play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
+114
+115        <receiver
+115-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+116            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+116-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+117            android:directBootAware="false"
+117-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+118            android:enabled="true"
+118-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+119            android:exported="true"
+119-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+120            android:permission="android.permission.DUMP" >
+120-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+121            <intent-filter>
+121-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+122                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+122-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+122-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+123            </intent-filter>
+124            <intent-filter>
+124-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+125                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+125-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+125-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+126            </intent-filter>
+127            <intent-filter>
+127-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+128                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+128-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+128-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+129            </intent-filter>
+130            <intent-filter>
+130-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+131                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+131-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+131-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/tombirch/.gradle/caches/transforms-3/f234d7478bddc2bfe4ba6de80fba3ed1/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+132            </intent-filter>
+133        </receiver>
+134    </application>
+135
+136</manifest>
