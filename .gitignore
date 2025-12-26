@@ -21,3 +21,22 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/secrets.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/build/
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+*.xcuserdata
